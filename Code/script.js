@@ -135,15 +135,8 @@ function movePiece(event) {
 
     if(clicks == 1){
         let firstclick = String(board[y][x]);
-        if(firstclick == "---"){
-            document.getElementById("coordinate").innerHTML = firstclick; 
-        }
-        else{
-            var PieceY = document.getElementById(firstclick).offsetTop;
-            var PieceX = document.getElementById(firstclick).offsetLeft;
-            clicks = 2
-        }
-        
+        document.getElementById("coordinate").innerHTML = firstclick; 
+       
 
     } 
     else{
