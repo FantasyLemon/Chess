@@ -2,9 +2,8 @@ squaresize = 500 / 8;
 xstart = 309;
 ystart = 10;
 let square = document.getElementById("square");
-var WP1Movement = document.getElementById("WP1");
-var WR1 = document.getElementById("WR1");
-clicks = 1
+WhiteMove = true
+clicks = 1;
 board = [
         ["BR1", "BN1", "BB1", "BQ1", "BK1", "BB2", "BN2", "BR2"],
         ["BP1", "BP2", "BP3", "BP4", "BP5", "BP6", "BP7", "BP8"],
@@ -132,32 +131,69 @@ function movePiece(event) {
         y = Math.floor(y / squaresize);
     }
 
-
+    // first click
     if(clicks == 1){
-        let firstclick = board[y][x]
-        document.getElementById("coordinate").innerHTML = firstclick; 
-       
+        let firstclick = board[y][x];
+        document.getElementById("coordinate").innerHTML = firstclick;
+        if(firstclick[0] == "W" && WhiteMove == true){
+            if(firstclick != "---"){
+                firsty = y
+                firstx = x
+                clicks = 2
+                WhiteMove = false
+            }
+        }
+        else if(firstclick[0] == "B" && WhiteMove != true){
+            if(firstclick != "---"){
+                firsty = y
+                firstx = x
+                clicks = 2
+                WhiteMove = true
+            }
+        } 
+        else{
+            clicks = 1;
+        }     
 
     } 
+    // second click
     else{
-
-        document.getElementById(piece).style.top = y + "px";
-        document.getElementById(piece).style.left = x + "px";
-        clicks = 1
+        // checks that the same square is not clicked twice
+        if(board[y][x] != board[firsty][firstx]){
+            updateposition(firsty, firstx, y, x)
+            clicks = 1;
+        }
+        else{
+            clicks = 1;
+            if(WhiteMove == true){
+                WhiteMove = false
+            }
+            else{
+                WhiteMove = true
+            }
+        }
+    
     }  
 
 }
 
-function Start(){
+// setting the position of the pieces on start
+function start(){
+    // rows
     for(r = 0; r<8; r++){
+        // collums
         for(c = 0; c<8; c++){
+            //specific square
             piece = String(board[r][c]);
+            // checks if the square is blank
             if(piece == "---"){
                 continue;
             }
+            // if the square contains a piece
             else{
-                y = 0 + (r* squaresize)
-                x = 0 + (c* squaresize)
+                // the coordinates of the piece
+                y = (r* squaresize);
+                x = (c* squaresize);
                 var PieceY = document.getElementById(piece).offsetTop;
                 var PieceX = document.getElementById(piece).offsetLeft;
                 PieceY = PieceY + y;
@@ -173,3 +209,42 @@ function Start(){
 }
 
     
+function updateposition(startY, startX, EndY, EndX){ 
+    // removing any pieces on square moved to
+    if(board[EndY][EndX] != "---"){
+        var Removal = document.getElementById(board[EndY][EndX])
+        Removal.remove();     
+    }
+
+    // updating the piece position
+    board[EndY][EndX] = board[startY][startX];
+    piece = String(board[EndY][EndX]);
+
+    // getting the current piece location
+    var pieceX = document.getElementById(piece).offsetLeft;
+    var pieceY = document.getElementById(piece).offsetTop;
+
+    // calculating the Y change
+    differenceY = EndY - startY
+    y = (differenceY * squaresize)
+    pieceY = pieceY + y;
+
+    // calculating the X change
+    differenceX = EndX - startX
+    x = (differenceX * squaresize)
+    pieceX = pieceX + x;
+    
+    // updating the position
+    document.getElementById(piece).style.top = pieceY + "px";
+    document.getElementById(piece).style.left = pieceX + "px";
+    
+    // clearing the current square
+    board[startY][startX] = "---"
+    let boardstate = board;
+    document.getElementById("coordinate").innerHTML = boardstate;
+  
+
+
+
+
+}
