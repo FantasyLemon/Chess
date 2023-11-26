@@ -1,6 +1,5 @@
 squaresize = 500 / 8;
 xstart = 390;
-// xstart = 709;
 ystart = 10;
 let square = document.getElementById("square");
 var WP1Movement = document.getElementById("WP1");
@@ -148,6 +147,7 @@ function movePiece(event) {
 
     } 
     else{
+
         document.getElementById(piece).style.top = y + "px";
         document.getElementById(piece).style.left = x + "px";
         clicks = 1
