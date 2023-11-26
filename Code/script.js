@@ -1,5 +1,5 @@
 squaresize = 500 / 8;
-xstart = 390;
+xstart = 309;
 ystart = 10;
 let square = document.getElementById("square");
 var WP1Movement = document.getElementById("WP1");
@@ -134,7 +134,7 @@ function movePiece(event) {
 
 
     if(clicks == 1){
-        let firstclick = String(board[y][x]);
+        let firstclick = board[y][x]
         document.getElementById("coordinate").innerHTML = firstclick; 
        
 
