@@ -114,7 +114,7 @@ for(i=1; i< 9; i++){
 }
 
 
-function showCoords(event) {
+function movePiece(event) {
    
     // let text = "X: " + x + " Y: " + y;
     // list finds index searching y then x so the x and y need to be swapped
@@ -133,25 +133,23 @@ function showCoords(event) {
         y = Math.floor(y / squaresize);
     }
 
-    let text = String(board[y][x]);
-    document.getElementById("coordinate").innerHTML = text; 
 
     if(clicks == 1){
-        FirstValue = [y, x]
-        PieceType = text
-        clicks = 2
+        let firstclick = String(board[y][x]);
+        if(firstclick == "---"){
+            document.getElementById("coordinate").innerHTML = firstclick; 
+        }
+        else{
+            var PieceY = document.getElementById(firstclick).offsetTop;
+            var PieceX = document.getElementById(firstclick).offsetLeft;
+            clicks = 2
+        }
+        
 
-    } else{
-        var PieceY = document.getElementById(PieceType).offsetTop;
-        var PieceX = document.getElementById(PieceType).offsetLeft;
-        x = (x * squaresize)
-        y = (y * squaresize)
-        var xMovement = x
-        var yMovement = y
-        PieceY = PieceY + yMovement;
-        document.getElementById(piece).style.top = PieceY + "px";
-        PieceX = PieceX + xMovement;
-        document.getElementById(piece).style.left = PieceX + "px";
+    } 
+    else{
+        document.getElementById(piece).style.top = y + "px";
+        document.getElementById(piece).style.left = x + "px";
         clicks = 1
     }  
 
@@ -167,13 +165,11 @@ function Start(){
             else{
                 y = 0 + (r* squaresize)
                 x = 0 + (c* squaresize)
-                var xMovement = x
-                var yMovement = y
                 var PieceY = document.getElementById(piece).offsetTop;
                 var PieceX = document.getElementById(piece).offsetLeft;
-                PieceY = PieceY + yMovement;
+                PieceY = PieceY + y;
                 document.getElementById(piece).style.top = PieceY + "px";
-                PieceX = PieceX + xMovement;
+                PieceX = PieceX + x;
                 document.getElementById(piece).style.left = PieceX + "px";
             }
             
