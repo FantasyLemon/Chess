@@ -4,6 +4,7 @@ ystart = 10;
 let square = document.getElementById("square");
 WhiteMove = true
 clicks = 1;
+Movemade = false
 board = [
         ["BR1", "BN1", "BB1", "BQ1", "BK1", "BB2", "BN2", "BR2"],
         ["BP1", "BP2", "BP3", "BP4", "BP5", "BP6", "BP7", "BP8"],
@@ -133,8 +134,11 @@ function movePiece(event) {
 
     // first click
     if(clicks == 1){
+
+        let test = moves.length;
+        document.getElementById("coordinate").innerHTML = test;
         let firstclick = board[y][x];
-        document.getElementById("coordinate").innerHTML = firstclick;
+        // check if white clicked and whites move
         if(firstclick[0] == "W" && WhiteMove == true){
             if(firstclick != "---"){
                 firsty = y
@@ -143,6 +147,7 @@ function movePiece(event) {
                 WhiteMove = false
             }
         }
+        // check if black clicked and black move
         else if(firstclick[0] == "B" && WhiteMove != true){
             if(firstclick != "---"){
                 firsty = y
@@ -151,6 +156,7 @@ function movePiece(event) {
                 WhiteMove = true
             }
         } 
+        // reset click
         else{
             clicks = 1;
         }     
@@ -162,9 +168,12 @@ function movePiece(event) {
         if(board[y][x] != board[firsty][firstx]){
             updateposition(firsty, firstx, y, x)
             clicks = 1;
+            validmoves();
         }
+        // reset click
         else{
             clicks = 1;
+            // reset players move
             if(WhiteMove == true){
                 WhiteMove = false
             }
@@ -179,6 +188,7 @@ function movePiece(event) {
 
 // setting the position of the pieces on start
 function start(){
+    validmoves();
     // rows
     for(r = 0; r<8; r++){
         // collums
@@ -208,7 +218,129 @@ function start(){
 
 }
 
-    
+// gets all moves including check
+function validmoves(){
+    getAllMoves();
+}
+
+// gets all the possible legal moves excluding check
+function getAllMoves(){
+    moves = []
+    for(r = 0; r<8; r++){
+        for(c = 0; c<8; c++){
+
+            // colour and piece type
+            turn = board[r][c][0];
+            piece = board[r][c][1];
+            // pawn movement
+            if (piece == "P"){
+                PawnMovement(r, c, turn, moves);
+            }
+            // knight
+            else if(piece == "N"){
+                KnightMovement(r, c, turn, moves);
+            }
+            // rook
+            else if(piece == "R"){
+                RookMovement(r, c, turn, moves);
+            }
+            // bishop
+            else if(piece == "B"){
+                BishopMovement(r, c, turn, moves);
+            }
+            // king
+            else if(piece == "K"){
+                KingMovement(r, c, turn, moves);
+            }
+            // queen
+            else{
+                BishopMovement(r, c, turn, moves);
+                RookMovement(r, c, turn, moves);
+            }
+        }
+    }
+
+    // pawn movement
+    function PawnMovement(r, c, turn, moves){
+        // whites pawn movement
+        if(turn == "W" && WhiteMove == true){
+            if(r-1 >= 0){
+                // checks square above
+                if(board[r-1][c] == "---"){
+                    pushvalues(r, c, r-1, c, moves)
+                    
+                    // two square move
+                    if(r == 6 && board[r - 2][c] == "---"){
+                        pushvalues(r, c, r-2, c, moves)
+                    }
+                }
+                // captures to the left
+                if(c - 1 >= 0){
+                    if(board[r-1][c-1][0] == "B"){
+                        pushvalues(r, c, r-1, c-1, moves)
+                    }
+                }
+                // captures to the right
+                if(c + 1 <= 7){
+                    if(board[r-1][c+1][0] == "B"){
+                        pushvalues(r, c, r-1, c+1, moves)
+                    }
+                }
+            }
+           
+        } 
+
+        // blacks pawn movement
+        if(turn == "B" && WhiteMove != true){
+            if(r+1 <= 7){
+                // checks 1 square above
+                if(board[r+1][c] == "---"){
+                    pushvalues(r, c, r+1, c, moves)
+                    
+                    // checks 2 squares above
+                    if(r == 1 && board[r + 2][c] == "---"){
+                        pushvalues(r, c, r+2, c, moves)
+                    }
+                }
+
+            }
+            // captures to the left
+            if(c - 1 >= 0){
+                if(board[r+1][c-1][0] == "W"){
+                    pushvalues(r, c, r+1, c-1, moves)
+                }
+            }
+            // captures to the right
+            if(c + 1 <= 7){
+                if(board[r+1][c+1][0] == "W"){
+                    pushvalues(r, c, r+1, c+1, moves)
+                }
+            }
+        }
+    }
+
+    // rook movement
+    function RookMovement(r, c, turn, moves){
+
+    }
+
+    // knight movement
+    function KnightMovement(r, c, turn, moves){
+    }
+
+    // bishop movement
+    function BishopMovement(r, c, turn, moves){
+    }
+
+    // king movement
+    function KingMovement(r, c, turn, moves){
+    }
+}
+function pushvalues(startY, startX, newY, newX, moves){
+    moves.push(startY + "," + startX + "," + newY + "," + newX)
+}
+
+// updating the position of the piece
 function updateposition(startY, startX, EndY, EndX){ 
     // removing any pieces on square moved to
     if(board[EndY][EndX] != "---"){
@@ -240,8 +372,6 @@ function updateposition(startY, startX, EndY, EndX){
     
     // clearing the current square
     board[startY][startX] = "---"
-    let boardstate = board;
-    document.getElementById("coordinate").innerHTML = boardstate;
   
 
 
