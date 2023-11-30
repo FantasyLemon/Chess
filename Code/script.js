@@ -5,6 +5,7 @@ let square = document.getElementById("square");
 WhiteMove = true
 clicks = 1;
 Movemade = false
+legalmove = false
 board = [
         ["BR1", "BN1", "BB1", "BQ1", "BK1", "BB2", "BN2", "BR2"],
         ["BP1", "BP2", "BP3", "BP4", "BP5", "BP6", "BP7", "BP8"],
@@ -134,9 +135,6 @@ function movePiece(event) {
 
     // first click
     if(clicks == 1){
-
-        let test = moves.length;
-        document.getElementById("coordinate").innerHTML = test;
         let firstclick = board[y][x];
         // check if white clicked and whites move
         if(firstclick[0] == "W" && WhiteMove == true){
@@ -163,9 +161,11 @@ function movePiece(event) {
 
     } 
     // second click
+    
     else{
+        checkmove(firsty, firstx, y, x, moves)
         // checks that the same square is not clicked twice
-        if(board[y][x] != board[firsty][firstx]){
+        if(board[y][x] != board[firsty][firstx] && legalmove == true){
             updateposition(firsty, firstx, y, x)
             clicks = 1;
             validmoves();
@@ -337,7 +337,10 @@ function getAllMoves(){
     }
 }
 function pushvalues(startY, startX, newY, newX, moves){
-    moves.push(startY + "," + startX + "," + newY + "," + newX)
+    moves.push(startY)
+    moves.push(startX)
+    moves.push(newY)
+    moves.push(newX)
 }
 
 // updating the position of the piece
@@ -372,9 +375,45 @@ function updateposition(startY, startX, EndY, EndX){
     
     // clearing the current square
     board[startY][startX] = "---"
-  
 
+}
 
-
-
+// check that the move is within the list
+function checkmove(firstY, firstX, y, x, moves){
+    // looping through all the coordinates
+    function loop(firstY, firstX, y, x, moves, i){
+        // do the starting coordinates match
+        if(moves[i] == firstY && moves[i+1] == firstX){
+            // do the end coordinates match
+            if(moves[i+2] == y && moves[i+3] == x){
+                legalmove = true
+            }
+            // non match
+            else{
+                // loop through again
+                if(i + 4 < moves.length){
+                    i = i + 4
+                    loop(firstY, firstX, y, x, moves, i)
+                }
+                else{
+                    // not a legal move
+                    legalmove = false
+                }
+               
+            }
+        }
+        else{
+            // loop through again
+            if(i + 4 < moves.length){
+                i = i + 4
+                loop(firstY, firstX, y, x, moves, i)
+            }
+            // not a legal move
+            else{
+                legalmove = false
+            }
+        }
+    }
+    i = 0
+    loop(firstY, firstX, y, x, moves, i)
 }
