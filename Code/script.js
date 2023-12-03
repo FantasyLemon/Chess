@@ -6,6 +6,7 @@ WhiteMove = true
 clicks = 1;
 Movemade = false
 legalmove = false
+testlist = []
 board = [
         ["BR1", "BN1", "BB1", "BQ1", "BK1", "BB2", "BN2", "BR2"],
         ["BP1", "BP2", "BP3", "BP4", "BP5", "BP6", "BP7", "BP8"],
@@ -232,6 +233,14 @@ function getAllMoves(){
             // colour and piece type
             turn = board[r][c][0];
             piece = board[r][c][1];
+            if(WhiteMove == true){
+                allypiece = "W"
+                enemymove = "B"
+            }
+            else if(WhiteMove != true){
+                enemymove = "W"
+                allypiece = "B"
+            }
             // pawn movement
             if (piece == "P"){
                 PawnMovement(r, c, turn, moves);
@@ -321,7 +330,58 @@ function getAllMoves(){
 
     // rook movement
     function RookMovement(r, c, turn, moves){
-
+        // all possible directions for a rook
+        rookdirections = []
+        // up
+        rookdirections.push(-1)
+        rookdirections.push(0)
+        // left
+        rookdirections.push(0)
+        rookdirections.push(-1)
+        // down
+        rookdirections.push(1)
+        rookdirections.push(0)
+        // right
+        rookdirections.push(0)
+        rookdirections.push(1)
+        // cycling through all directions
+        for (d = 0; d<8; d = d + 2){
+            // extending until the end of the board
+            for (i = 0; i<8; i++){
+                // getting new coordinates
+                value1 = rookdirections[d] * i
+                value2 = rookdirections[d+1] * i
+                endRow = r + value1
+                endCol = c + value2
+                // checking the coordinates are on the grid
+                if(endRow < 8 && endRow >= 0){
+                    if(endCol < 8 && endCol >= 0){
+                        // getting new piece
+                        endPiece = board[endRow][endCol]
+                        // adds empty squares to the list
+                        if(endPiece[0] == "-"){
+                            pushvalues(r, c, endRow, endCol, moves)
+                        }
+                        // adding enemy pieces to the list of moves
+                        if(endPiece[0] == enemymove){
+                            pushvalues(r, c, endRow, endCol, moves)
+                            // stops the piece being able to move past enemy pieces
+                            break
+                        }
+                        // testlist.push(enemymove)
+                        // document.getElementById("coordinate").innerHTML = testlist
+                    }
+                    else{
+                        break
+                    }
+                }
+                else{
+                    break
+                }
+            }
+            
+        }
+        
     }
 
     // knight movement
