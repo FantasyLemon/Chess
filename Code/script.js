@@ -363,7 +363,7 @@ function getAllMoves(){
                             pushvalues(r, c, endRow, endCol, moves)
                         }
                         // adding enemy pieces to the list of moves
-                        if(endPiece[0] == enemymove){
+                        else if(endPiece[0] == enemymove){
                             pushvalues(r, c, endRow, endCol, moves)
                             // stops the piece being able to move past enemy pieces
                             break
@@ -386,14 +386,150 @@ function getAllMoves(){
 
     // knight movement
     function KnightMovement(r, c, turn, moves){
+        knightdirections = []
+
+        knightdirections.push(-2)
+        knightdirections.push(-1)
+
+        knightdirections.push(-2)
+        knightdirections.push(1)
+
+        knightdirections.push(-1)
+        knightdirections.push(-2)
+
+        knightdirections.push(-1)
+        knightdirections.push(2)
+
+        knightdirections.push(1)
+        knightdirections.push(-2)
+
+        knightdirections.push(1)
+        knightdirections.push(2)
+
+        knightdirections.push(2)
+        knightdirections.push(-1)
+
+        knightdirections.push(2)
+        knightdirections.push(1)
+       
+       
+
+        for(d = 0; d <16; d = d + 2){
+            value1 = knightdirections[d]
+            value2 = knightdirections[d+1] 
+            endRow = r + value1
+            endCol = c + value2
+            // testlist.push(value1)
+            // document.getElementById("coordinate").innerHTML = testlist
+            
+            if(endRow < 8 && endRow >= 0){
+                if(endCol < 8 && endCol >= 0){
+                    endPiece = board[endRow][endCol]
+                    if(endPiece[0] != allypiece){
+                        pushvalues(r, c, endRow, endCol, moves)
+                    }
+                }
+                
+            }
+           
+           
+        }
     }
 
     // bishop movement
     function BishopMovement(r, c, turn, moves){
+        bishopdirections = []
+
+        bishopdirections.push(-1)
+        bishopdirections.push(-1)
+
+        bishopdirections.push(-1)
+        bishopdirections.push(1)
+
+        bishopdirections.push(1)
+        bishopdirections.push(-1)
+
+        bishopdirections.push(1)
+        bishopdirections.push(1)
+
+        for (d = 0; d<8; d = d + 2){
+            // extending until the end of the board
+            for (i = 0; i<8; i++){
+                // getting new coordinates
+                value1 = bishopdirections[d] * i
+                value2 = bishopdirections[d+1] * i
+                endRow = r + value1
+                endCol = c + value2
+                // checking the coordinates are on the grid
+                if(endRow < 8 && endRow >= 0){
+                    if(endCol < 8 && endCol >= 0){
+                        // getting new piece
+                        endPiece = board[endRow][endCol]
+                        // adds empty squares to the list
+                        if(endPiece[0] == "-"){
+                            pushvalues(r, c, endRow, endCol, moves)
+                        }
+                        // adding enemy pieces to the list of moves
+                        else if(endPiece[0] == enemymove){
+                            pushvalues(r, c, endRow, endCol, moves)
+                            // stops the piece being able to move past enemy pieces
+                            break
+                        }
+                    }
+                    else{
+                        break
+                    }
+                }
+                else{
+                    break
+                }
+            }
+        }
+
     }
 
     // king movement
     function KingMovement(r, c, turn, moves){
+        kingdirections = []
+
+        kingdirections.push(-1)
+        kingdirections.push(-1)
+
+        kingdirections.push(-1)
+        kingdirections.push(0)
+
+        kingdirections.push(-1)
+        kingdirections.push(1)
+
+        kingdirections.push(0)
+        kingdirections.push(-1)
+
+        kingdirections.push(0)
+        kingdirections.push(1)
+
+        kingdirections.push(1)
+        kingdirections.push(-1)
+
+        kingdirections.push(1)
+        kingdirections.push(0)
+
+        kingdirections.push(1)
+        kingdirections.push(1)
+
+        for(d = 0; d < 16; d = d + 2){
+            value1 = kingdirections[d]
+            value2 = kingdirections[d+1] 
+            endRow = r + value1
+            endCol = c + value2
+            if(0 <= endRow && endRow < 8){
+                if(0 <= endCol && endCol < 8){
+                    endPiece = board[endRow][endCol]
+                    if(endPiece[0] != allypiece){
+                        pushvalues(r, c, endRow, endCol, moves)
+                    }
+                }
+            }
+        }
     }
 }
 function pushvalues(startY, startX, newY, newX, moves){
