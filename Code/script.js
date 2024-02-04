@@ -1,12 +1,26 @@
+// size of the squares
 squaresize = 500 / 8;
 xstart = 309;
 ystart = 10;
 let square = document.getElementById("square");
+
+// starting values
 WhiteMove = true
 clicks = 1;
 Movemade = false
 legalmove = false
+colour1 = "#769656"
+colour2 = "#eeeed2"
 testlist = []
+// king starting positions
+whitekinglocation = []
+blackkinglocation = []
+whitekinglocation.push(7)
+whitekinglocation.push(4)
+blackkinglocation.push(0)
+blackkinglocation.push(4)
+
+// initial board
 board = [
         ["BR1", "BN1", "BB1", "BQ1", "BK1", "BB2", "BN2", "BR2"],
         ["BP1", "BP2", "BP3", "BP4", "BP5", "BP6", "BP7", "BP8"],
@@ -18,15 +32,24 @@ board = [
         ["WR1", "WN1", "WB1", "WQ1", "WK1", "WB2", "WN2", "WR2"]
 ];
 
-
+tempboard= [
+    ["BR1", "BN1", "BB1", "BQ1", "BK1", "BB2", "BN2", "BR2"],
+    ["BP1", "BP2", "BP3", "BP4", "BP5", "BP6", "BP7", "BP8"],
+    ["---", "---", "---", "---", "---", "---", "---", "---"],
+    ["---", "---", "---", "---", "---", "---", "---", "---"],
+    ["---", "---", "---", "---", "---", "---", "---", "---"],
+    ["---", "---", "---", "---", "---", "---", "---", "---"],
+    ["WP1", "WP2", "WP3", "WP4", "WP5", "WP6", "WP7", "WP8"],
+    ["WR1", "WN1", "WB1", "WQ1", "WK1", "WB2", "WN2", "WR2"]
+];
 // row 1
 for(i=1; i< 9; i++){
     let Row1 = document.createElement("div")
     if(i % 2 == 0){
-        Row1.style.backgroundColor = "brown"
+        Row1.style.backgroundColor = colour1
     }
     else{
-        Row1.style.background = "white"
+        Row1.style.background = colour2
     }
     square.appendChild(Row1)
 }
@@ -35,10 +58,10 @@ for(i=1; i< 9; i++){
 for(i=1; i< 9; i++){
     let Row2 = document.createElement("div")
     if(i % 2 == 0){
-        Row2.style.backgroundColor = "white"
+        Row2.style.backgroundColor = colour2
     }
     else{
-        Row2.style.background = "brown"
+        Row2.style.background = colour1
     }
     square.appendChild(Row2)
 }
@@ -47,10 +70,10 @@ for(i=1; i< 9; i++){
 for(i=1; i< 9; i++){
     let Row3 = document.createElement("div")
     if(i % 2 == 0){
-        Row3.style.backgroundColor = "brown"
+        Row3.style.backgroundColor = colour1
     }
     else{
-        Row3.style.background = "white"
+        Row3.style.background = colour2
     }
     square.appendChild(Row3)
 }
@@ -59,10 +82,10 @@ for(i=1; i< 9; i++){
 for(i=1; i< 9; i++){
     let Row4 = document.createElement("div")
     if(i % 2 == 0){
-        Row4.style.backgroundColor = "white"
+        Row4.style.backgroundColor = colour2
     }
     else{
-        Row4.style.background = "brown"
+        Row4.style.background = colour1
     }
     square.appendChild(Row4)
 }
@@ -70,10 +93,10 @@ for(i=1; i< 9; i++){
 for(i=1; i< 9; i++){
     let Row5 = document.createElement("div")
     if(i % 2 == 0){
-        Row5.style.backgroundColor = "brown"
+        Row5.style.backgroundColor = colour1
     }
     else{
-        Row5.style.background = "white"
+        Row5.style.background = colour2
     }
     square.appendChild(Row5)
 }
@@ -82,10 +105,10 @@ for(i=1; i< 9; i++){
 for(i=1; i< 9; i++){
     let Row6 = document.createElement("div")
     if(i % 2 == 0){
-        Row6.style.backgroundColor = "white"
+        Row6.style.backgroundColor = colour2
     }
     else{
-        Row6.style.background = "brown"
+        Row6.style.background = colour1
     }
     square.appendChild(Row6)
 }
@@ -94,10 +117,10 @@ for(i=1; i< 9; i++){
 for(i=1; i< 9; i++){
     let Row7 = document.createElement("div")
     if(i % 2 == 0){
-        Row7.style.backgroundColor = "brown"
+        Row7.style.backgroundColor = colour1
     }
     else{
-        Row7.style.background = "white"
+        Row7.style.background = colour2
     }
     square.appendChild(Row7)
 }
@@ -106,10 +129,10 @@ for(i=1; i< 9; i++){
 for(i=1; i< 9; i++){
     let Row8 = document.createElement("div")
     if(i % 2 == 0){
-        Row8.style.backgroundColor = "white"
+        Row8.style.backgroundColor = colour2
     }
     else{
-        Row8.style.background = "brown"
+        Row8.style.background = colour1
     }
     square.appendChild(Row8)
 }
@@ -169,6 +192,7 @@ function movePiece(event) {
         if(board[y][x] != board[firsty][firstx] && legalmove == true){
             updateposition(firsty, firstx, y, x)
             clicks = 1;
+
             validmoves();
         }
         // reset click
@@ -221,7 +245,24 @@ function start(){
 
 // gets all moves including check
 function validmoves(){
-    getAllMoves();
+    getAllMoves()
+    // document.getElementById("coordinate").innerHTML = moves
+    futureboard(6, 4, 4, 4)
+    
+}
+
+
+function futureboard(y1, x1, y2, x2){
+    future = tempboard
+    future[y2][x2] = future[y1][x1];
+    future[y1][x1] = "---"
+    document.getElementById("coordinate").innerHTML = future
+}
+
+
+
+function incheck(){
+
 }
 
 // gets all the possible legal moves excluding check
@@ -330,58 +371,32 @@ function getAllMoves(){
 
     // rook movement
     function RookMovement(r, c, turn, moves){
-        // all possible directions for a rook
-        rookdirections = []
-        // up
-        rookdirections.push(-1)
-        rookdirections.push(0)
-        // left
-        rookdirections.push(0)
-        rookdirections.push(-1)
-        // down
-        rookdirections.push(1)
-        rookdirections.push(0)
-        // right
-        rookdirections.push(0)
-        rookdirections.push(1)
-        // cycling through all directions
-        for (d = 0; d<8; d = d + 2){
-            // extending until the end of the board
-            for (i = 0; i<8; i++){
-                // getting new coordinates
-                value1 = rookdirections[d] * i
-                value2 = rookdirections[d+1] * i
-                endRow = r + value1
-                endCol = c + value2
-                // checking the coordinates are on the grid
-                if(endRow < 8 && endRow >= 0){
-                    if(endCol < 8 && endCol >= 0){
-                        // getting new piece
-                        endPiece = board[endRow][endCol]
-                        // adds empty squares to the list
-                        if(endPiece[0] == "-"){
-                            pushvalues(r, c, endRow, endCol, moves)
-                        }
-                        // adding enemy pieces to the list of moves
-                        else if(endPiece[0] == enemymove){
-                            pushvalues(r, c, endRow, endCol, moves)
-                            // stops the piece being able to move past enemy pieces
-                            break
-                        }
-                        // testlist.push(enemymove)
-                        // document.getElementById("coordinate").innerHTML = testlist
+        directions = [ [-1, 0], [0, -1], [1, 0], [0, 1] ];
+        for (d of directions) {
+            for (i = 1; i < 8; i++) {
+                endRow = r + d[0] * i;
+                endCol = c + d[1] * i;
+                
+                if (0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8) {
+                    endPiece = board[endRow][endCol];
+                    
+                    if (endPiece === "---") {
+                        pushvalues(r, c, endRow, endCol, moves)
+                    } 
+                    else if (endPiece[0] === enemymove) {
+                        pushvalues(r, c, endRow, endCol, moves)
+                        break;
+                    } 
+                    else {
+                        break;
                     }
-                    else{
-                        break
-                    }
-                }
-                else{
-                    break
+                } 
+                else {
+                    break;
                 }
             }
-            
         }
-        
+
     }
 
     // knight movement
@@ -438,54 +453,29 @@ function getAllMoves(){
 
     // bishop movement
     function BishopMovement(r, c, turn, moves){
-        bishopdirections = []
+        directions = [ [-1, -1], [-1, 1], [1, -1], [1, 1] ];
 
-        bishopdirections.push(-1)
-        bishopdirections.push(-1)
+        for (d of directions) {
+            for (let i = 1; i < 8; i++) {
+                endRow = r + d[0] * i;
+                endCol = c + d[1] * i;
 
-        bishopdirections.push(-1)
-        bishopdirections.push(1)
+                if (0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8) {
+                    endPiece = board[endRow][endCol];
 
-        bishopdirections.push(1)
-        bishopdirections.push(-1)
-
-        bishopdirections.push(1)
-        bishopdirections.push(1)
-
-        for (d = 0; d<8; d = d + 2){
-            // extending until the end of the board
-            for (i = 0; i<8; i++){
-                // getting new coordinates
-                value1 = bishopdirections[d] * i
-                value2 = bishopdirections[d+1] * i
-                endRow = r + value1
-                endCol = c + value2
-                // checking the coordinates are on the grid
-                if(endRow < 8 && endRow >= 0){
-                    if(endCol < 8 && endCol >= 0){
-                        // getting new piece
-                        endPiece = board[endRow][endCol]
-                        // adds empty squares to the list
-                        if(endPiece[0] == "-"){
-                            pushvalues(r, c, endRow, endCol, moves)
-                        }
-                        // adding enemy pieces to the list of moves
-                        else if(endPiece[0] == enemymove){
-                            pushvalues(r, c, endRow, endCol, moves)
-                            // stops the piece being able to move past enemy pieces
-                            break
-                        }
+                    if (endPiece === "---") {
+                        pushvalues(r, c, endRow, endCol, moves);
+                    } else if (endPiece[0] == enemymove) {
+                        pushvalues(r, c, endRow, endCol, moves);
+                        break;
+                    } else {
+                        break;
                     }
-                    else{
-                        break
-                    }
-                }
-                else{
-                    break
+                } else {
+                    break;
                 }
             }
         }
-
     }
 
     // king movement
@@ -537,10 +527,11 @@ function pushvalues(startY, startX, newY, newX, moves){
     moves.push(startX)
     moves.push(newY)
     moves.push(newX)
+    
 }
 
 // updating the position of the piece
-function updateposition(startY, startX, EndY, EndX){ 
+function updateposition(startY, startX, EndY, EndX){
     // removing any pieces on square moved to
     if(board[EndY][EndX] != "---"){
         var Removal = document.getElementById(board[EndY][EndX])
@@ -550,7 +541,7 @@ function updateposition(startY, startX, EndY, EndX){
     // updating the piece position
     board[EndY][EndX] = board[startY][startX];
     piece = String(board[EndY][EndX]);
-
+  
     // getting the current piece location
     var pieceX = document.getElementById(piece).offsetLeft;
     var pieceY = document.getElementById(piece).offsetTop;
@@ -569,6 +560,7 @@ function updateposition(startY, startX, EndY, EndX){
     document.getElementById(piece).style.top = pieceY + "px";
     document.getElementById(piece).style.left = pieceX + "px";
     
+    
     // clearing the current square
     board[startY][startX] = "---"
 
@@ -581,8 +573,29 @@ function checkmove(firstY, firstX, y, x, moves){
         // do the starting coordinates match
         if(moves[i] == firstY && moves[i+1] == firstX){
             // do the end coordinates match
-            if(moves[i+2] == y && moves[i+3] == x){
-                legalmove = true
+            if(moves[i+2] == y && moves[i+3] == x){ 
+                
+                // updating the white king location
+                if(board[firstY][firstX] == "WK1"){
+                    whitekinglocation = []
+                    whitekinglocation.push(y)
+                    whitekinglocation.push(x)
+                    // document.getElementById("coordinate").innerHTML = whitekinglocation
+                    legalmove = true
+                }
+
+                // updating the black king location
+                else if(board[firstY][firstX] == "BK1"){
+                    blackkinglocation = []
+                    blackkinglocation.push(y)
+                    blackkinglocation.push(x)
+                    legalmove = true
+                }
+                else{
+                    legalmove = true
+                }
+                
+                
             }
             // non match
             else{
