@@ -181,7 +181,7 @@ function movePiece(event) {
             updateposition(firsty, firstx, y, x)
             clicks = 1;
 
-            moves = validmoves();
+            validmoves()
         }
         // reset click
         else{
@@ -201,7 +201,7 @@ function movePiece(event) {
 
 // setting the position of the pieces on start
 function start(){
-    moves = validmoves();
+    validmoves()
     // rows
     for(r = 0; r<8; r++){
         // collums
@@ -234,32 +234,9 @@ function start(){
 // gets all moves including check
 function validmoves(){
     getAllMoves(true)
+    document.getElementById("coordinate").innerHTML = moves
     // going through each of the next moves and seeing if it puts the king in check
-    for(i=0; i < moves.length; i = i + 4){
-        futureboard(moves[i], moves[i+1], moves[i+2], moves[i+3])
-    }  
-    return moves
 }
-
-
-function futureboard(y1, x1, y2, x2){
-    future = board
-    // making the next move
-    storedvalue = future[y2][x2]
-    future[y2][x2] = future[y1][x1]
-    future[y1][x1] = "---" 
-
-    // checking the move after that
-    getAllMoves(false)
-    document.getElementById("coordinate").innerHTML = futuremoves
-    
-    //undoing the move
-    future[y1][x1] = future[y2][x2]
-    future[y2][x2] = storedvalue
-    return moves
-       
-}
-
 
 
 function incheck(){
@@ -294,24 +271,24 @@ function getAllMoves(movetype){
             }
             // knight
             else if(piece == "N"){
-                // KnightMovement(r, c, turn, moves);
+                KnightMovement(r, c, turn, moves);
             }
             // rook
             else if(piece == "R"){
-                // RookMovement(r, c, turn, moves);
+                RookMovement(r, c, turn, moves);
             }
             // bishop
             else if(piece == "B"){
-                // BishopMovement(r, c, turn, moves);
+                BishopMovement(r, c, turn, moves);
             }
             // king
             else if(piece == "K"){
-                //  KingMovement(r, c, turn, moves);
+                KingMovement(r, c, turn, moves);
             }
             // queen
             else{
-                // BishopMovement(r, c, turn, moves);
-                // RookMovement(r, c, turn, moves);
+                BishopMovement(r, c, turn, moves);
+                RookMovement(r, c, turn, moves);
             }
         }
     }
