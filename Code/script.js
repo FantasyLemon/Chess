@@ -32,16 +32,6 @@ board = [
         ["WR1", "WN1", "WB1", "WQ1", "WK1", "WB2", "WN2", "WR2"]
 ];
 
-tempboard= [
-    ["BR1", "BN1", "BB1", "BQ1", "BK1", "BB2", "BN2", "BR2"],
-    ["BP1", "BP2", "BP3", "BP4", "BP5", "BP6", "BP7", "BP8"],
-    ["---", "---", "---", "---", "---", "---", "---", "---"],
-    ["---", "---", "---", "---", "---", "---", "---", "---"],
-    ["---", "---", "---", "---", "---", "---", "---", "---"],
-    ["---", "---", "---", "---", "---", "---", "---", "---"],
-    ["WP1", "WP2", "WP3", "WP4", "WP5", "WP6", "WP7", "WP8"],
-    ["WR1", "WN1", "WB1", "WQ1", "WK1", "WB2", "WN2", "WR2"]
-];
 // row 1
 for(i=1; i< 9; i++){
     let Row1 = document.createElement("div")
@@ -140,8 +130,6 @@ for(i=1; i< 9; i++){
 
 function movePiece(event) {
    
-    // let text = "X: " + x + " Y: " + y;
-    // list finds index searching y then x so the x and y need to be swapped
     let x = event.clientX;
     let y = event.clientY;
   
@@ -193,7 +181,7 @@ function movePiece(event) {
             updateposition(firsty, firstx, y, x)
             clicks = 1;
 
-            validmoves();
+            moves = validmoves();
         }
         // reset click
         else{
@@ -213,7 +201,7 @@ function movePiece(event) {
 
 // setting the position of the pieces on start
 function start(){
-    validmoves();
+    moves = validmoves();
     // rows
     for(r = 0; r<8; r++){
         // collums
@@ -245,18 +233,31 @@ function start(){
 
 // gets all moves including check
 function validmoves(){
-    getAllMoves()
-    // document.getElementById("coordinate").innerHTML = moves
-    futureboard(6, 4, 4, 4)
-    
+    getAllMoves(true)
+    // going through each of the next moves and seeing if it puts the king in check
+    for(i=0; i < moves.length; i = i + 4){
+        futureboard(moves[i], moves[i+1], moves[i+2], moves[i+3])
+    }  
+    return moves
 }
 
 
 function futureboard(y1, x1, y2, x2){
-    future = tempboard
-    future[y2][x2] = future[y1][x1];
-    future[y1][x1] = "---"
-    document.getElementById("coordinate").innerHTML = future
+    future = board
+    // making the next move
+    storedvalue = future[y2][x2]
+    future[y2][x2] = future[y1][x1]
+    future[y1][x1] = "---" 
+
+    // checking the move after that
+    getAllMoves(false)
+    document.getElementById("coordinate").innerHTML = futuremoves
+    
+    //undoing the move
+    future[y1][x1] = future[y2][x2]
+    future[y2][x2] = storedvalue
+    return moves
+       
 }
 
 
@@ -266,8 +267,13 @@ function incheck(){
 }
 
 // gets all the possible legal moves excluding check
-function getAllMoves(){
+function getAllMoves(movetype){
+    if(movetype == false){
+        tempboard = board
+        board = future
+    }
     moves = []
+    futuremoves = []
     for(r = 0; r<8; r++){
         for(c = 0; c<8; c++){
 
@@ -288,24 +294,24 @@ function getAllMoves(){
             }
             // knight
             else if(piece == "N"){
-                KnightMovement(r, c, turn, moves);
+                // KnightMovement(r, c, turn, moves);
             }
             // rook
             else if(piece == "R"){
-                RookMovement(r, c, turn, moves);
+                // RookMovement(r, c, turn, moves);
             }
             // bishop
             else if(piece == "B"){
-                BishopMovement(r, c, turn, moves);
+                // BishopMovement(r, c, turn, moves);
             }
             // king
             else if(piece == "K"){
-                KingMovement(r, c, turn, moves);
+                //  KingMovement(r, c, turn, moves);
             }
             // queen
             else{
-                BishopMovement(r, c, turn, moves);
-                RookMovement(r, c, turn, moves);
+                // BishopMovement(r, c, turn, moves);
+                // RookMovement(r, c, turn, moves);
             }
         }
     }
@@ -317,23 +323,23 @@ function getAllMoves(){
             if(r-1 >= 0){
                 // checks square above
                 if(board[r-1][c] == "---"){
-                    pushvalues(r, c, r-1, c, moves)
+                    pushvalues(r, c, r-1, c, moves, movetype, futuremoves)
                     
                     // two square move
                     if(r == 6 && board[r - 2][c] == "---"){
-                        pushvalues(r, c, r-2, c, moves)
+                        pushvalues(r, c, r-2, c, moves, movetype, futuremoves)
                     }
                 }
                 // captures to the left
                 if(c - 1 >= 0){
                     if(board[r-1][c-1][0] == "B"){
-                        pushvalues(r, c, r-1, c-1, moves)
+                        pushvalues(r, c, r-1, c-1, moves, movetype, futuremoves)
                     }
                 }
                 // captures to the right
                 if(c + 1 <= 7){
                     if(board[r-1][c+1][0] == "B"){
-                        pushvalues(r, c, r-1, c+1, moves)
+                        pushvalues(r, c, r-1, c+1, moves, movetype, futuremoves)
                     }
                 }
             }
@@ -345,11 +351,11 @@ function getAllMoves(){
             if(r+1 <= 7){
                 // checks 1 square above
                 if(board[r+1][c] == "---"){
-                    pushvalues(r, c, r+1, c, moves)
+                    pushvalues(r, c, r+1, c, moves, movetype, futuremoves)
                     
                     // checks 2 squares above
                     if(r == 1 && board[r + 2][c] == "---"){
-                        pushvalues(r, c, r+2, c, moves)
+                        pushvalues(r, c, r+2, c, moves, movetype, futuremoves)
                     }
                 }
 
@@ -357,46 +363,43 @@ function getAllMoves(){
             // captures to the left
             if(c - 1 >= 0){
                 if(board[r+1][c-1][0] == "W"){
-                    pushvalues(r, c, r+1, c-1, moves)
+                    pushvalues(r, c, r+1, c-1, moves, movetype, futuremoves)
                 }
             }
             // captures to the right
             if(c + 1 <= 7){
                 if(board[r+1][c+1][0] == "W"){
-                    pushvalues(r, c, r+1, c+1, moves)
+                    pushvalues(r, c, r+1, c+1, moves, movetype, futuremoves)
                 }
             }
         }
     }
 
     // rook movement
-    function RookMovement(r, c, turn, moves){
-        directions = [ [-1, 0], [0, -1], [1, 0], [0, 1] ];
-        for (d of directions) {
-            for (i = 1; i < 8; i++) {
-                endRow = r + d[0] * i;
-                endCol = c + d[1] * i;
-                
-                if (0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8) {
-                    endPiece = board[endRow][endCol];
-                    
-                    if (endPiece === "---") {
-                        pushvalues(r, c, endRow, endCol, moves)
-                    } 
-                    else if (endPiece[0] === enemymove) {
-                        pushvalues(r, c, endRow, endCol, moves)
-                        break;
-                    } 
-                    else {
-                        break;
-                    }
-                } 
-                else {
+    function RookMovement(r, c, turn, moves) {
+        const directions = [ [-1, 0], [0, -1], [1, 0], [0, 1] ];
+    
+        for (const d of directions) {
+            for (let i = 1; i < 8; i++) {
+                const endRow = r + d[0] * i;
+                const endCol = c + d[1] * i;
+    
+                if (!(0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8)) {
+                    break;
+                }
+    
+                const endPiece = board[endRow][endCol];
+    
+                if (endPiece === "---") {
+                    pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves);
+                } else if (endPiece[0] === enemymove) {
+                    pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves);
+                    break;
+                } else {
                     break;
                 }
             }
         }
-
     }
 
     // knight movement
@@ -441,7 +444,7 @@ function getAllMoves(){
                 if(endCol < 8 && endCol >= 0){
                     endPiece = board[endRow][endCol]
                     if(endPiece[0] != allypiece){
-                        pushvalues(r, c, endRow, endCol, moves)
+                        pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves)
                     }
                 }
                 
@@ -452,31 +455,34 @@ function getAllMoves(){
     }
 
     // bishop movement
-    function BishopMovement(r, c, turn, moves){
-        directions = [ [-1, -1], [-1, 1], [1, -1], [1, 1] ];
-
-        for (d of directions) {
+    function BishopMovement(r, c, turn, moves) {
+        const directions = [ [-1, -1], [-1, 1], [1, -1], [1, 1] ];
+    
+        for (const d of directions) {
+            const [dr, dc] = d;
+    
             for (let i = 1; i < 8; i++) {
-                endRow = r + d[0] * i;
-                endCol = c + d[1] * i;
-
-                if (0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8) {
-                    endPiece = board[endRow][endCol];
-
-                    if (endPiece === "---") {
-                        pushvalues(r, c, endRow, endCol, moves);
-                    } else if (endPiece[0] == enemymove) {
-                        pushvalues(r, c, endRow, endCol, moves);
-                        break;
-                    } else {
-                        break;
-                    }
+                const endRow = r + dr * i;
+                const endCol = c + dc * i;
+    
+                if (!(0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8)) {
+                    break;
+                }
+    
+                const endPiece = board[endRow][endCol];
+    
+                if (endPiece === "---") {
+                    pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves);
+                } else if (endPiece[0] === enemymove) {
+                    pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves);
+                    break;
                 } else {
                     break;
                 }
             }
         }
     }
+    
 
     // king movement
     function KingMovement(r, c, turn, moves){
@@ -515,19 +521,30 @@ function getAllMoves(){
                 if(0 <= endCol && endCol < 8){
                     endPiece = board[endRow][endCol]
                     if(endPiece[0] != allypiece){
-                        pushvalues(r, c, endRow, endCol, moves)
+                        pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves)
                     }
                 }
             }
         }
     }
 }
-function pushvalues(startY, startX, newY, newX, moves){
-    moves.push(startY)
-    moves.push(startX)
-    moves.push(newY)
-    moves.push(newX)
+function pushvalues(startY, startX, newY, newX, moves, movetype, futuremoves) {
+    if (movetype === true) {
+        moves.push(startY);
+        moves.push(startX);
+        moves.push(newY);
+        moves.push(newX);
+    }
     
+    if (movetype === false) {
+        futuremoves.push(startY);
+        futuremoves.push(startX);
+        futuremoves.push(newY);
+        futuremoves.push(newX);
+        board = tempboard; 
+    }
+
+   
 }
 
 // updating the position of the piece
