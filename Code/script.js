@@ -506,20 +506,26 @@ function getAllMoves(movetype){
     }
 }
 function pushvalues(startY, startX, newY, newX, moves, movetype, futuremoves) {
-    if (movetype === true) {
-        moves.push(startY);
-        moves.push(startX);
-        moves.push(newY);
-        moves.push(newX);
+    if(WhiteMove == true && board[startY][startX][0] == "W" || WhiteMove != true && board[startY][startX][0] == "B"){
+        if(board[startY][startX][0] != board[newY][newX][0]){
+            document.getElementById("test").innerHTML = moves.length / 4
+             if (movetype === true) {
+                moves.push(startY);
+                moves.push(startX);
+                moves.push(newY);
+                moves.push(newX);
+            }
+            if (movetype === false) {
+                futuremoves.push(startY);
+                futuremoves.push(startX);
+                futuremoves.push(newY);
+                futuremoves.push(newX);
+                board = tempboard; 
+            }
+        }
+        
     }
-    
-    if (movetype === false) {
-        futuremoves.push(startY);
-        futuremoves.push(startX);
-        futuremoves.push(newY);
-        futuremoves.push(newX);
-        board = tempboard; 
-    }
+   
 
    
 }
