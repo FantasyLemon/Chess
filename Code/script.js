@@ -5,6 +5,7 @@ ystart = 10;
 let square = document.getElementById("square");
 
 // starting values
+totalturns = 0
 WhiteMove = true
 clicks = 1;
 Movemade = false
@@ -129,10 +130,10 @@ for(i=1; i< 9; i++){
 
 
 function movePiece(event) {
-   
+    document.getElementById("coordinate").innerHTML = WhiteMove
     let x = event.clientX;
     let y = event.clientY;
-  
+
     //calculating x coordinate
     x = x - xstart;
     if(x >= 0){
@@ -173,14 +174,13 @@ function movePiece(event) {
 
     } 
     // second click
-    
     else{
         checkmove(firsty, firstx, y, x, moves)
         // checks that the same square is not clicked twice
         if(board[y][x] != board[firsty][firstx] && legalmove == true){
             updateposition(firsty, firstx, y, x)
             clicks = 1;
-
+            totalturns = totalturns + 1
             validmoves()
         }
         // reset click
@@ -197,7 +197,27 @@ function movePiece(event) {
     
     }  
 
+    
 }
+
+// determines which algorithms to use
+function algorithmpicker(){
+    randommove()
+}
+
+//random move algorithm
+function randommove(){
+    endnumber = moves.length / 4
+    document.getElementById("test").innerHTML = endnumber
+    randommovevalue = Math.floor(Math.random() * endnumber);
+    randommovevalue = randommovevalue * 4;
+    updateposition(moves[randommovevalue], moves[randommovevalue + 1], moves[randommovevalue + 2], moves[randommovevalue + 3])
+    WhiteMove = true
+    totalturns = totalturns + 1
+    validmoves()
+    
+}
+
 
 // setting the position of the pieces on start
 function start(){
@@ -292,6 +312,9 @@ function possiblecheck(sy, sx, ey, ex){
 }
 
 function incheck(){
+
+}
+function underattack(){
 
 }
 
@@ -557,7 +580,9 @@ function getAllMoves(board, movetype, Movecolour){
     }
 }
 function pushvalues(startY, startX, newY, newX, moves, movetype) {
+    // updating the regular move set
     if(movetype == true){
+        // removing unwanted moves from the move set
         if(board[startY][startX][0] != board[newY][newX][0]){
             if(WhiteMove == true && board[startY][startX][0] == "W" || WhiteMove != true && board[startY][startX][0] == "B"){ 
                 moves.push(startY);
@@ -569,6 +594,8 @@ function pushvalues(startY, startX, newY, newX, moves, movetype) {
         }
     }
     else{
+        // updating the future move set
+        // removing the unwanted moves
         if(board[startY][startX][0] != board[newY][newX][0]){
             if(WhiteMove == true && board[startY][startX][0] == "B" || WhiteMove != true && board[startY][startX][0] == "W"){ 
                 opmoves.push(startY);
@@ -589,7 +616,7 @@ function updateposition(startY, startX, EndY, EndX){
         var Removal = document.getElementById(board[EndY][EndX])
         Removal.remove();     
     }
-
+    currentpieces = []
     // updating the piece position
     board[EndY][EndX] = board[startY][startX];
     piece = String(board[EndY][EndX]);
@@ -615,7 +642,18 @@ function updateposition(startY, startX, EndY, EndX){
     
     // clearing the current square
     board[startY][startX] = "---"
-
+    
+    // checking for incufficent material
+    for(x=0; x<8; x=x+1){
+        for(y=0; y<8; y=y+1){
+            if(board[y][x] != "---"){
+                currentpieces.push(board[y][x])
+            }
+        }
+    }
+    if(currentpieces.length == 2){
+        document.getElementById("coordinate").innerHTML = "stalemate: insufficient materiel"
+    }
 }
 
 // check that the move is within the list
