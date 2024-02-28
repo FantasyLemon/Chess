@@ -233,35 +233,88 @@ function start(){
 
 // gets all moves including check
 function validmoves(){
-    getAllMoves(true)
-    document.getElementById("coordinate").innerHTML = moves
-    // going through each of the next moves and seeing if it puts the king in check
+    getAllMoves(board, true, WhiteMove)
+    
+    firstmoves = moves.slice();
+    
+    // cycling through all the sets of moves
+    for(i=0; i < firstmoves.length; i = i + 4){  
+        possiblecheck(firstmoves[i], firstmoves[i+1], firstmoves[i+2], firstmoves[i+3])
+    }
 }
 
+function possiblecheck(sy, sx, ey, ex){
+    // creating a copy of the board
+    futureboard = board;
+    // moving each move
+    temp = futureboard[ey][ex]
+    futureboard[ey][ex] = futureboard[sy][sx]
+    futureboard[sy][sx] = "---"
+    // changing the players turn
+    if(WhiteMove == true){
+        opcolour = false
+    }
+    else{
+        opcolour = true
+    }
+    // retrieving all moves from future state
+    getAllMoves(futureboard, false, opcolour)
+    // document.getElementById("test").innerHTML = opmoves
+    
+    for(j=0; j < opmoves.length; j = j + 4){
+        endSquare = futureboard[opmoves[j+2]][opmoves[j+3]]
+        
+        // is the endsquare a king
+        if(endSquare[1] == "K"){
+            if(WhiteMove == true && endSquare[0] == "W" || WhiteMove == false && endSquare[0] == "B"){
+                // remove the movement
+                moves.splice(i, 4);
+
+                // checking whether that piece can move to another location
+                samestart = moves[i]
+                sameend = moves[i+1]
+                for(k=0; k<moves.length; k = k + 4){
+                    if(moves[k] == samestart && moves[k+1] == sameend){
+                        moves.splice(k, 4);
+                    }
+                }
+            }
+        }
+        
+        
+    
+    }
+    // document.getElementById("coordinate").innerHTML = testlist
+    // reseting the board
+    futureboard[sy][sx] = futureboard[ey][ex]
+    futureboard[ey][ex] = temp
+    moves = firstmoves
+}
 
 function incheck(){
 
 }
 
 // gets all the possible legal moves excluding check
-function getAllMoves(movetype){
-    if(movetype == false){
-        tempboard = board
-        board = future
+function getAllMoves(board, movetype, Movecolour){
+    if (movetype == true){
+        moves = []
     }
-    moves = []
-    futuremoves = []
+    else{
+        opmoves = []
+    }
+    
     for(r = 0; r<8; r++){
         for(c = 0; c<8; c++){
 
             // colour and piece type
             turn = board[r][c][0];
             piece = board[r][c][1];
-            if(WhiteMove == true){
+            if(Movecolour == true){
                 allypiece = "W"
                 enemymove = "B"
             }
-            else if(WhiteMove != true){
+            else if(Movecolour != true){
                 enemymove = "W"
                 allypiece = "B"
             }
@@ -296,27 +349,27 @@ function getAllMoves(movetype){
     // pawn movement
     function PawnMovement(r, c, turn, moves){
         // whites pawn movement
-        if(turn == "W" && WhiteMove == true){
+        if(turn == "W" && Movecolour == true){
             if(r-1 >= 0){
                 // checks square above
                 if(board[r-1][c] == "---"){
-                    pushvalues(r, c, r-1, c, moves, movetype, futuremoves)
+                    pushvalues(r, c, r-1, c, moves, movetype)
                     
                     // two square move
                     if(r == 6 && board[r - 2][c] == "---"){
-                        pushvalues(r, c, r-2, c, moves, movetype, futuremoves)
+                        pushvalues(r, c, r-2, c, moves, movetype)
                     }
                 }
                 // captures to the left
                 if(c - 1 >= 0){
                     if(board[r-1][c-1][0] == "B"){
-                        pushvalues(r, c, r-1, c-1, moves, movetype, futuremoves)
+                        pushvalues(r, c, r-1, c-1, moves, movetype)
                     }
                 }
                 // captures to the right
                 if(c + 1 <= 7){
                     if(board[r-1][c+1][0] == "B"){
-                        pushvalues(r, c, r-1, c+1, moves, movetype, futuremoves)
+                        pushvalues(r, c, r-1, c+1, moves, movetype)
                     }
                 }
             }
@@ -324,15 +377,15 @@ function getAllMoves(movetype){
         } 
 
         // blacks pawn movement
-        if(turn == "B" && WhiteMove != true){
+        if(turn == "B" && Movecolour != true){
             if(r+1 <= 7){
                 // checks 1 square above
                 if(board[r+1][c] == "---"){
-                    pushvalues(r, c, r+1, c, moves, movetype, futuremoves)
+                    pushvalues(r, c, r+1, c, moves, movetype)
                     
                     // checks 2 squares above
                     if(r == 1 && board[r + 2][c] == "---"){
-                        pushvalues(r, c, r+2, c, moves, movetype, futuremoves)
+                        pushvalues(r, c, r+2, c, moves, movetype)
                     }
                 }
 
@@ -340,13 +393,13 @@ function getAllMoves(movetype){
             // captures to the left
             if(c - 1 >= 0){
                 if(board[r+1][c-1][0] == "W"){
-                    pushvalues(r, c, r+1, c-1, moves, movetype, futuremoves)
+                    pushvalues(r, c, r+1, c-1, moves, movetype)
                 }
             }
             // captures to the right
             if(c + 1 <= 7){
                 if(board[r+1][c+1][0] == "W"){
-                    pushvalues(r, c, r+1, c+1, moves, movetype, futuremoves)
+                    pushvalues(r, c, r+1, c+1, moves, movetype)
                 }
             }
         }
@@ -368,9 +421,9 @@ function getAllMoves(movetype){
                 const endPiece = board[endRow][endCol];
     
                 if (endPiece === "---") {
-                    pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves);
+                    pushvalues(r, c, endRow, endCol, moves, movetype);
                 } else if (endPiece[0] === enemymove) {
-                    pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves);
+                    pushvalues(r, c, endRow, endCol, moves, movetype);
                     break;
                 } else {
                     break;
@@ -405,9 +458,7 @@ function getAllMoves(movetype){
         knightdirections.push(-1)
 
         knightdirections.push(2)
-        knightdirections.push(1)
-       
-       
+        knightdirections.push(1)      
 
         for(d = 0; d <16; d = d + 2){
             value1 = knightdirections[d]
@@ -421,7 +472,7 @@ function getAllMoves(movetype){
                 if(endCol < 8 && endCol >= 0){
                     endPiece = board[endRow][endCol]
                     if(endPiece[0] != allypiece){
-                        pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves)
+                        pushvalues(r, c, endRow, endCol, moves, movetype)
                     }
                 }
                 
@@ -449,9 +500,9 @@ function getAllMoves(movetype){
                 const endPiece = board[endRow][endCol];
     
                 if (endPiece === "---") {
-                    pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves);
+                    pushvalues(r, c, endRow, endCol, moves, movetype);
                 } else if (endPiece[0] === enemymove) {
-                    pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves);
+                    pushvalues(r, c, endRow, endCol, moves, movetype);
                     break;
                 } else {
                     break;
@@ -498,36 +549,37 @@ function getAllMoves(movetype){
                 if(0 <= endCol && endCol < 8){
                     endPiece = board[endRow][endCol]
                     if(endPiece[0] != allypiece){
-                        pushvalues(r, c, endRow, endCol, moves, movetype, futuremoves)
+                        pushvalues(r, c, endRow, endCol, moves, movetype)
                     }
                 }
             }
         }
     }
 }
-function pushvalues(startY, startX, newY, newX, moves, movetype, futuremoves) {
-    if(WhiteMove == true && board[startY][startX][0] == "W" || WhiteMove != true && board[startY][startX][0] == "B"){
+function pushvalues(startY, startX, newY, newX, moves, movetype) {
+    if(movetype == true){
         if(board[startY][startX][0] != board[newY][newX][0]){
-            document.getElementById("test").innerHTML = moves.length / 4
-             if (movetype === true) {
+            if(WhiteMove == true && board[startY][startX][0] == "W" || WhiteMove != true && board[startY][startX][0] == "B"){ 
                 moves.push(startY);
                 moves.push(startX);
                 moves.push(newY);
-                moves.push(newX);
+                moves.push(newX);   
             }
-            if (movetype === false) {
-                futuremoves.push(startY);
-                futuremoves.push(startX);
-                futuremoves.push(newY);
-                futuremoves.push(newX);
-                board = tempboard; 
-            }
-        }
         
+        }
     }
-   
+    else{
+        if(board[startY][startX][0] != board[newY][newX][0]){
+            if(WhiteMove == true && board[startY][startX][0] == "B" || WhiteMove != true && board[startY][startX][0] == "W"){ 
+                opmoves.push(startY);
+                opmoves.push(startX);
+                opmoves.push(newY);
+                opmoves.push(newX);  
 
-   
+            }   
+        }
+       
+    }
 }
 
 // updating the position of the piece
