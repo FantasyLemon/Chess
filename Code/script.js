@@ -214,6 +214,7 @@ function randommove(){
     updateposition(moves[randommovevalue], moves[randommovevalue + 1], moves[randommovevalue + 2], moves[randommovevalue + 3])
     WhiteMove = true
     totalturns = totalturns + 1
+    clicks = 1
     validmoves()
     
 }
@@ -642,7 +643,7 @@ function updateposition(startY, startX, EndY, EndX){
     
     // clearing the current square
     board[startY][startX] = "---"
-    
+
     // checking for incufficent material
     for(x=0; x<8; x=x+1){
         for(y=0; y<8; y=y+1){
@@ -651,6 +652,7 @@ function updateposition(startY, startX, EndY, EndX){
             }
         }
     }
+
     if(currentpieces.length == 2){
         document.getElementById("coordinate").innerHTML = "stalemate: insufficient materiel"
     }
