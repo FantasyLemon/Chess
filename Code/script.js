@@ -1,6 +1,6 @@
 // size of the squares
 squaresize = 500 / 8;
-xstart = 309;
+xstart = window.innerWidth * 0.16
 ystart = 10;
 let square = document.getElementById("square");
 
