@@ -130,7 +130,6 @@ for(i=1; i< 9; i++){
 
 
 function movePiece(event) {
-    document.getElementById("coordinate").innerHTML = WhiteMove
     let x = event.clientX;
     let y = event.clientY;
 
@@ -200,26 +199,6 @@ function movePiece(event) {
     
 }
 
-// determines which algorithms to use
-function algorithmpicker(){
-    randommove()
-}
-
-//random move algorithm
-function randommove(){
-    endnumber = moves.length / 4
-    document.getElementById("test").innerHTML = endnumber
-    randommovevalue = Math.floor(Math.random() * endnumber);
-    randommovevalue = randommovevalue * 4;
-    updateposition(moves[randommovevalue], moves[randommovevalue + 1], moves[randommovevalue + 2], moves[randommovevalue + 3])
-    WhiteMove = true
-    totalturns = totalturns + 1
-    clicks = 1
-    validmoves()
-    
-}
-
-
 // setting the position of the pieces on start
 function start(){
     validmoves()
@@ -257,10 +236,12 @@ function validmoves(){
     getAllMoves(board, true, WhiteMove)
     
     firstmoves = moves.slice();
-    
     // cycling through all the sets of moves
     for(i=0; i < firstmoves.length; i = i + 4){  
         possiblecheck(firstmoves[i], firstmoves[i+1], firstmoves[i+2], firstmoves[i+3])
+    }
+    if(incheck() == true){
+        document.getElementById("test").innerHTML = "check"
     }
 }
 
@@ -301,21 +282,51 @@ function possiblecheck(sy, sx, ey, ex){
                 }
             }
         }
-        
-        
-    
     }
-    // document.getElementById("coordinate").innerHTML = testlist
+
     // reseting the board
     futureboard[sy][sx] = futureboard[ey][ex]
     futureboard[ey][ex] = temp
     moves = firstmoves
 }
 
+// determine wether current player is in check
 function incheck(){
-
+    document.getElementById("coordinate").innerHTML = whitekinglocation
+    if(WhiteMove == true){
+        return underattack(whitekinglocation[0], whitekinglocation[1])
+    }
+    else{
+        return underattack(blackkinglocation[0], blackkinglocation[1])
+    }
 }
-function underattack(){
+
+// determines if the enemy can attack the square containing the king
+function underattack(kingrow, kingcol){
+    // switches to opponents turn
+    if(WhiteMove == true){
+        opcolour = false
+    }
+    else{
+        opcolour = true
+    }
+    // generates all moves on the board
+    getAllMoves(board, false, opcolour)
+
+    for(k=0; k < opmoves.length; k=k+4){
+        endSquare = futureboard[opmoves[k+2]][opmoves[k+3]]
+        testlist.push(endSquare)
+        
+        // square is under attack
+        if(endSquare[1] == "K"){
+            if(WhiteMove == true && endSquare[0] == "W" || WhiteMove == false && endSquare[0] == "B"){
+                return true
+            }
+            
+        }
+
+        
+    }
 
 }
 
@@ -672,7 +683,6 @@ function checkmove(firstY, firstX, y, x, moves){
                     whitekinglocation = []
                     whitekinglocation.push(y)
                     whitekinglocation.push(x)
-                    // document.getElementById("coordinate").innerHTML = whitekinglocation
                     legalmove = true
                 }
 
