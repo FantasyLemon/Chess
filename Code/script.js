@@ -21,6 +21,7 @@ whitekinglocation.push(4)
 blackkinglocation.push(0)
 blackkinglocation.push(4)
 
+
 // initial board
 board = [
         ["BR1", "BN1", "BB1", "BQ1", "BK1", "BB2", "BN2", "BR2"],
@@ -234,17 +235,63 @@ function start(){
 // gets all moves including check
 function validmoves(){
     getAllMoves(board, true, WhiteMove)
-    
     firstmoves = moves.slice();
     // cycling through all the sets of moves
     for(i=0; i < firstmoves.length; i = i + 4){  
         possiblecheck(firstmoves[i], firstmoves[i+1], firstmoves[i+2], firstmoves[i+3])
     }
-    if(incheck() == true){
-        document.getElementById("test").innerHTML = "check"
+
+    // detemines whether currently in check
+    if(determinecheck() == true){
+        check = true
+        incheck()
+        
     }
+    else{
+        check = false
+        document.getElementById("test").innerHTML = " "
+    }
+    document.getElementById("coordinate").innerHTML = check
+    
 }
 
+// removes any anomalous moves once in check
+function incheck(){
+    for(l = 0; l < moves.length; l=l+4){
+        checkboard = board;
+
+        checktemp = checkboard[moves[l+2]][moves[l+3]]
+        checkboard[moves[l+2]][moves[l+3]] = checkboard[moves[l]][moves[l+1]]
+        checkboard[moves[l]][moves[l+1]] = "---"
+        if(WhiteMove == true){
+            opcolour = false
+        }
+        else{
+            opcolour = true
+        }
+        getAllMoves(checkboard, false, opcolour)
+        checkboard[moves[l]][moves[l+1]] = checkboard[moves[l+2]][moves[l+3]]
+        checkboard[moves[l+2]][moves[l+3]] = checktemp
+
+        for(m=0; m<opmoves.length; m = m + 4){
+            checksquare = checkboard[opmoves[m+2]][opmoves[m+3]]
+            
+
+            if(checksquare[1] != "K"){          
+                
+            }
+            else{
+                moves.splice(l, 4)
+            }
+        }
+        
+        
+   }
+   testlist.push(moves)
+   document.getElementById("test").innerHTML = testlist
+}
+
+// prevents pieces from being moved that open up the king to being taken
 function possiblecheck(sy, sx, ey, ex){
     // creating a copy of the board
     futureboard = board;
@@ -262,7 +309,10 @@ function possiblecheck(sy, sx, ey, ex){
     // retrieving all moves from future state
     getAllMoves(futureboard, false, opcolour)
     // document.getElementById("test").innerHTML = opmoves
-    
+    futureboard[sy][sx] = futureboard[ey][ex]
+    futureboard[ey][ex] = temp
+    moves = firstmoves
+
     for(j=0; j < opmoves.length; j = j + 4){
         endSquare = futureboard[opmoves[j+2]][opmoves[j+3]]
         
@@ -285,14 +335,11 @@ function possiblecheck(sy, sx, ey, ex){
     }
 
     // reseting the board
-    futureboard[sy][sx] = futureboard[ey][ex]
-    futureboard[ey][ex] = temp
-    moves = firstmoves
+
 }
 
 // determine wether current player is in check
-function incheck(){
-    document.getElementById("coordinate").innerHTML = whitekinglocation
+function determinecheck(){
     if(WhiteMove == true){
         return underattack(whitekinglocation[0], whitekinglocation[1])
     }
@@ -315,7 +362,6 @@ function underattack(kingrow, kingcol){
 
     for(k=0; k < opmoves.length; k=k+4){
         endSquare = futureboard[opmoves[k+2]][opmoves[k+3]]
-        testlist.push(endSquare)
         
         // square is under attack
         if(endSquare[1] == "K"){
@@ -500,8 +546,7 @@ function getAllMoves(board, movetype, Movecolour){
             value2 = knightdirections[d+1] 
             endRow = r + value1
             endCol = c + value2
-            // testlist.push(value1)
-            // document.getElementById("coordinate").innerHTML = testlist
+            
             
             if(endRow < 8 && endRow >= 0){
                 if(endCol < 8 && endCol >= 0){
@@ -665,7 +710,13 @@ function updateposition(startY, startX, EndY, EndX){
     }
 
     if(currentpieces.length == 2){
-        document.getElementById("coordinate").innerHTML = "stalemate: insufficient materiel"
+        if(check == true){
+            document.getElementById("coordinate").innerHTML = "checkmate"
+        }
+        else{
+             document.getElementById("coordinate").innerHTML = "stalemate: insufficient materiel"
+        }
+       
     }
 }
 
