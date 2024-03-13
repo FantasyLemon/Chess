@@ -12,7 +12,12 @@ Movemade = false
 legalmove = false
 colour1 = "#769656"
 colour2 = "#eeeed2"
+
+
+// test lists - remove
 testlist = []
+newlist = []
+
 // king starting positions
 whitekinglocation = []
 blackkinglocation = []
@@ -251,44 +256,53 @@ function validmoves(){
         check = false
         document.getElementById("test").innerHTML = " "
     }
-    document.getElementById("coordinate").innerHTML = check
+    // document.getElementById("coordinate").innerHTML = check
     
 }
 
 // removes any anomalous moves once in check
 function incheck(){
     for(l = 0; l < moves.length; l=l+4){
-        checkboard = board;
 
+        // creates a copy of the board
+        checkboard = board;
+        // moves the pieces
         checktemp = checkboard[moves[l+2]][moves[l+3]]
         checkboard[moves[l+2]][moves[l+3]] = checkboard[moves[l]][moves[l+1]]
         checkboard[moves[l]][moves[l+1]] = "---"
+        document.getElementById("test").innerHTML = checkboard
+        // switch players turn
         if(WhiteMove == true){
             opcolour = false
         }
         else{
             opcolour = true
         }
+
+        // retrieve oposing players moves
         getAllMoves(checkboard, false, opcolour)
+       
+        //undoing the move
         checkboard[moves[l]][moves[l+1]] = checkboard[moves[l+2]][moves[l+3]]
         checkboard[moves[l+2]][moves[l+3]] = checktemp
 
         for(m=0; m<opmoves.length; m = m + 4){
-            checksquare = checkboard[opmoves[m+2]][opmoves[m+3]]
-            
+            checksquare = board[opmoves[m+2]][opmoves[m+3]]
 
-            if(checksquare[1] != "K"){          
-                
+            // removes the moves that put the king in
+            if(checksquare[1] == "K"){   
+                moves.splice(l, 4)
+                    
             }
             else{
-                moves.splice(l, 4)
             }
         }
-        
+
+       
         
    }
-   testlist.push(moves)
-   document.getElementById("test").innerHTML = testlist
+   document.getElementById("coordinate").innerHTML = moves
+   
 }
 
 // prevents pieces from being moved that open up the king to being taken
