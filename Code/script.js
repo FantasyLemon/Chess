@@ -250,13 +250,19 @@ function validmoves(){
     if(determinecheck() == true){
         check = true
         incheck()
+        if(moves.length > 1){
+            document.getElementById("test").innerHTML = "Check"
+        }
+        else{
+            document.getElementById("test").innerHTML = "Checkmate"
+        }
         
     }
     else{
         check = false
         document.getElementById("test").innerHTML = " "
     }
-    // document.getElementById("coordinate").innerHTML = check
+    document.getElementById("test2").innerHTML = check
     
 }
 
@@ -292,14 +298,11 @@ function incheck(){
             // removes the moves that put the king in
             if(checksquare[1] == "K"){   
                 moves.splice(l, 4)
+                l = l - 4;
                     
             }
-            else{
-            }
+            
         }
-
-       
-        
    }
    document.getElementById("coordinate").innerHTML = moves
    
