@@ -10,8 +10,8 @@ WhiteMove = true
 clicks = 1;
 Movemade = false
 legalmove = false
-colour1 = "#769656"
-colour2 = "#eeeed2"
+colour1 = "#B88B4A"
+colour2 = "#E3C16F"
 
 
 // test lists - remove
