@@ -201,11 +201,7 @@ function movePiece(event) {
         }
     
     }  
-
-    
 }
-
-
 
 // setting the position of the pieces on start
 function start(){
