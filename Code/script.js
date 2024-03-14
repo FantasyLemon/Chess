@@ -191,6 +191,8 @@ function movePiece(event) {
         // reset click
         else{
             clicks = 1;
+            moves = []
+
             // reset players move
             if(WhiteMove == true){
                 WhiteMove = false
@@ -201,7 +203,11 @@ function movePiece(event) {
         }
     
     }  
+
+    
 }
+
+
 
 // setting the position of the pieces on start
 function start(){
@@ -238,189 +244,52 @@ function start(){
 // gets all moves including check
 function validmoves(){
     getAllMoves(board, true, WhiteMove)
-    firstmoves = moves.slice();
-    // cycling through all the sets of moves
-    for(i=0; i < firstmoves.length; i = i + 4){  
-        possiblecheck(firstmoves[i], firstmoves[i+1], firstmoves[i+2], firstmoves[i+3])
-    }
 
-    // detemines whether currently in check
-    if(determinecheck() == true){
-        check = true
-        // removes moves from in check
-        incheck()
-        // check
-        if(moves.length > 1){
-            document.getElementById("test").innerHTML = "Check"
-        }
-        // checkmate
-        else{
-            document.getElementById("test").innerHTML = "Checkmate"
-        }
-        
+    // checking if in check
+    for(x=0; x< moves.length; x=x+4){
+        lookingforcheck(moves[x], moves[x+1], moves[x+2], moves[x+3])
     }
-    // hide the message whilst not in check
-    else{
-        check = false
-        document.getElementById("test").innerHTML = " "
-    }
-
-    
     
 }
 
-// remove moves once in chekc
-function incheck(){
-    for(l = 0; l < moves.length; l=l+4){
 
-        // creates a copy of the board
-        checkboard = board;
-        // moves the pieces
-        checktemp = checkboard[moves[l+2]][moves[l+3]]
-        checkboard[moves[l+2]][moves[l+3]] = checkboard[moves[l]][moves[l+1]]
-        checkboard[moves[l]][moves[l+1]] = "---"
-        // switch players turn
-        if(WhiteMove == true){
-            opcolour = false
+// looking for check 
+function lookingforcheck(startingY, startingX, endingY, endingX){
+
+    // making a copy of the board and moving each piece
+    checkboard = board;
+    temp = checkboard[endingY][endingX]
+    checkboard[endingY][endingX] = checkboard[startingY][startingX]
+    checkboard[startingY][startingX] = "---"
+    
+    // calculating oposing players moves
+    if(WhiteMove == true){
+            getAllMoves(checkboard, false, false)
         }
-        else{
-            opcolour = true
+    else{
+        getAllMoves(checkboard, false, true)
+    }
+    document.getElementById("test").innerHTML = opmoves;
+
+    // going through all the oposing players moves
+    for(a=0; a < opmoves.length; a=a+4){
+        if(checkboard[opmoves[a+2]][opmoves[a+3]][1] == "K"){
+            incheck()
+           
         }
-
-        // retrieve oposing players moves
-        getAllMoves(checkboard, false, opcolour)
-       
-        //undoing the move
-        checkboard[moves[l]][moves[l+1]] = checkboard[moves[l+2]][moves[l+3]]
-        checkboard[moves[l+2]][moves[l+3]] = checktemp
-
-        for(m=0; m<opmoves.length; m = m + 4){
-            checksquare = board[opmoves[m+2]][opmoves[m+3]]
-
-            // removes the moves that put the king in
-            if(checksquare[1] == "K"){   
-                moves.splice(l, 4)
-                l = l - 4;
-                    
-            }            
-            
-        }
-       
-        // king movements
-        for(p=0; p < moves.length; p = p + 4){
-            if(board[moves[p]][moves[p+1]][1] == "K"){
-                kingboard = board
-                kingtemp = kingboard[moves[p+2]][moves[p+3]]
-                // moving the king
-                if(WhiteMove == true){
-                    kingboard[moves[p+2]][moves[p+3]] = "WK1"
-                }
-                else{
-                    kingboard[moves[p+2]][moves[p+3]] = "BK1"
-                }
-                getAllMoves(kingboard, false, opcolour)
-                // removing any king moves into check
-                for(q=0; q < opmoves.length; q = q + 4){
-                    if(kingboard[opmoves[q+2]][opmoves[q+3]][1] == "K"){ 
-                        moves.splice(l, 4)
-                        l = l - 4;
-                    }
-                }
-                // undoing the future moves
-                kingboard[moves[p]][moves[p+1]] = kingboard[moves[p+2]][moves[p+3]]
-                kingboard[moves[p+2]][moves[p+3]] = kingtemp
-            }
-        }
-
-   }
-   document.getElementById("coordinate").innerHTML = moves
+    }
+    // undoing the boardstate
+    checkboard[startingY][startingX] = checkboard[endingY][endingX]
+    checkboard[endingY][endingX] = temp
    
 }
-
-// prevents pieces from being moved that open up the king to being taken
-function possiblecheck(sy, sx, ey, ex){
-    // creating a copy of the board
-    futureboard = board;
-    // moving each move
-    temp = futureboard[ey][ex]
-    futureboard[ey][ex] = futureboard[sy][sx]
-    futureboard[sy][sx] = "---"
-    // changing the players turn
-    if(WhiteMove == true){
-        opcolour = false
-    }
-    else{
-        opcolour = true
-    }
-    // retrieving all moves from future state
-    getAllMoves(futureboard, false, opcolour)
-    // document.getElementById("test").innerHTML = opmoves
-    futureboard[sy][sx] = futureboard[ey][ex]
-    futureboard[ey][ex] = temp
-    moves = firstmoves
-
-    for(j=0; j < opmoves.length; j = j + 4){
-        endSquare = futureboard[opmoves[j+2]][opmoves[j+3]]
-        
-        // is the endsquare a king
-        if(endSquare[1] == "K"){
-            if(WhiteMove == true && endSquare[0] == "W" || WhiteMove == false && endSquare[0] == "B"){
-                // remove the movement
-                moves.splice(i, 4);
-
-                // checking whether that piece can move to another location
-                samestart = moves[i]
-                sameend = moves[i+1]
-                for(k=0; k<moves.length; k = k + 4){
-                    if(moves[k] == samestart && moves[k+1] == sameend){
-                        moves.splice(k, 4);
-                    }
-                }
-            }
-        }
-    }
-
-    // reseting the board
-
+function incheck(){
+    document.getElementById("test2").innerHTML = "working"
 }
 
-// determine wether current player is in check
-function determinecheck(){
-    if(WhiteMove == true){
-        return underattack(whitekinglocation[0], whitekinglocation[1])
-    }
-    else{
-        return underattack(blackkinglocation[0], blackkinglocation[1])
-    }
-}
+     
 
-// determines if the enemy can attack the square containing the king
-function underattack(kingrow, kingcol){
-    // switches to opponents turn
-    if(WhiteMove == true){
-        opcolour = false
-    }
-    else{
-        opcolour = true
-    }
-    // generates all moves on the board
-    getAllMoves(board, false, opcolour)
 
-    for(k=0; k < opmoves.length; k=k+4){
-        endSquare = futureboard[opmoves[k+2]][opmoves[k+3]]
-        
-        // square is under attack
-        if(endSquare[1] == "K"){
-            if(WhiteMove == true && endSquare[0] == "W" || WhiteMove == false && endSquare[0] == "B"){
-                return true
-            }
-            
-        }
-
-        
-    }
-
-}
 
 // gets all the possible legal moves excluding check
 function getAllMoves(board, movetype, Movecolour){
@@ -755,15 +624,7 @@ function updateposition(startY, startX, EndY, EndX){
         }
     }
 
-    if(currentpieces.length == 2){
-        if(check == true){
-            document.getElementById("coordinate").innerHTML = "checkmate"
-        }
-        else{
-             document.getElementById("coordinate").innerHTML = "stalemate: insufficient materiel"
-        }
-       
-    }
+   
 }
 
 // check that the move is within the list
