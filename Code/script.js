@@ -203,32 +203,8 @@ function movePiece(event) {
     }  
 }
 
-const fs = require('fs');
-
-function getUsernamesFromJSON(filename) {
-    try {
-        // Read the JSON file synchronously
-        const data = fs.readFileSync(filename, 'utf8');
-        
-        // Parse the JSON data
-        const jsonData = JSON.parse(data);
-        
-        // Extract usernames from the 'users' array
-        const usernames = jsonData.users.map(user => user.username);
-        
-        return usernames;
-    } catch (error) {
-        console.error('Error reading JSON file:', error);
-        return [];
-    }
-}
-
-
-
 // setting the position of the pieces on start
 function start(){
-    usernames = getUsernamesFromJSON("accounts.json");
-    document.getElementById("test2").innerHTML = usernames.length
     validmoves()
     // rows
     for(r = 0; r<8; r++){
