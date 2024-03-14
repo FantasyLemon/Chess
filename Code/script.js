@@ -205,6 +205,8 @@ function movePiece(event) {
     
 }
 
+
+
 // setting the position of the pieces on start
 function start(){
     validmoves()
@@ -249,24 +251,29 @@ function validmoves(){
     // detemines whether currently in check
     if(determinecheck() == true){
         check = true
+        // removes moves from in check
         incheck()
+        // check
         if(moves.length > 1){
             document.getElementById("test").innerHTML = "Check"
         }
+        // checkmate
         else{
             document.getElementById("test").innerHTML = "Checkmate"
         }
         
     }
+    // hide the message whilst not in check
     else{
         check = false
         document.getElementById("test").innerHTML = " "
     }
-    document.getElementById("test2").innerHTML = check
+
+    
     
 }
 
-// removes any anomalous moves once in check
+// remove moves once in chekc
 function incheck(){
     for(l = 0; l < moves.length; l=l+4){
 
@@ -276,7 +283,6 @@ function incheck(){
         checktemp = checkboard[moves[l+2]][moves[l+3]]
         checkboard[moves[l+2]][moves[l+3]] = checkboard[moves[l]][moves[l+1]]
         checkboard[moves[l]][moves[l+1]] = "---"
-        document.getElementById("test").innerHTML = checkboard
         // switch players turn
         if(WhiteMove == true){
             opcolour = false
@@ -300,9 +306,36 @@ function incheck(){
                 moves.splice(l, 4)
                 l = l - 4;
                     
-            }
+            }            
             
         }
+       
+        // king movements
+        for(p=0; p < moves.length; p = p + 4){
+            if(board[moves[p]][moves[p+1]][1] == "K"){
+                kingboard = board
+                kingtemp = kingboard[moves[p+2]][moves[p+3]]
+                // moving the king
+                if(WhiteMove == true){
+                    kingboard[moves[p+2]][moves[p+3]] = "WK1"
+                }
+                else{
+                    kingboard[moves[p+2]][moves[p+3]] = "BK1"
+                }
+                getAllMoves(kingboard, false, opcolour)
+                // removing any king moves into check
+                for(q=0; q < opmoves.length; q = q + 4){
+                    if(kingboard[opmoves[q+2]][opmoves[q+3]][1] == "K"){ 
+                        moves.splice(l, 4)
+                        l = l - 4;
+                    }
+                }
+                // undoing the future moves
+                kingboard[moves[p]][moves[p+1]] = kingboard[moves[p+2]][moves[p+3]]
+                kingboard[moves[p+2]][moves[p+3]] = kingtemp
+            }
+        }
+
    }
    document.getElementById("coordinate").innerHTML = moves
    
