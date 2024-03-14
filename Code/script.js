@@ -191,7 +191,6 @@ function movePiece(event) {
         // reset click
         else{
             clicks = 1;
-            moves = []
 
             // reset players move
             if(WhiteMove == true){
@@ -244,12 +243,14 @@ function start(){
 // gets all moves including check
 function validmoves(){
     getAllMoves(board, true, WhiteMove)
-
+    tempboardstate = board
     // checking if in check
-    for(x=0; x< moves.length; x=x+4){
+    for(x=0; x < moves.length; x=x+4){
         lookingforcheck(moves[x], moves[x+1], moves[x+2], moves[x+3])
     }
-    
+    if(moves.length == 0){
+        document.getElementById("coordinate").innerHTML = "Checkmate"
+    }
 }
 
 
@@ -265,17 +266,16 @@ function lookingforcheck(startingY, startingX, endingY, endingX){
     // calculating oposing players moves
     if(WhiteMove == true){
             getAllMoves(checkboard, false, false)
-        }
+    }
     else{
         getAllMoves(checkboard, false, true)
     }
-    document.getElementById("test").innerHTML = opmoves;
 
     // going through all the oposing players moves
     for(a=0; a < opmoves.length; a=a+4){
         if(checkboard[opmoves[a+2]][opmoves[a+3]][1] == "K"){
-            incheck()
-           
+            moves.splice(x, 4)
+            x = x - 4
         }
     }
     // undoing the boardstate
@@ -283,12 +283,6 @@ function lookingforcheck(startingY, startingX, endingY, endingX){
     checkboard[endingY][endingX] = temp
    
 }
-function incheck(){
-    document.getElementById("test2").innerHTML = "working"
-}
-
-     
-
 
 
 // gets all the possible legal moves excluding check
@@ -614,6 +608,7 @@ function updateposition(startY, startX, EndY, EndX){
     
     // clearing the current square
     board[startY][startX] = "---"
+    moves = []
 
     // checking for incufficent material
     for(x=0; x<8; x=x+1){
