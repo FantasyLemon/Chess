@@ -206,10 +206,25 @@ function movePiece(event) {
     
 }
 
-
+async function getusernames() {
+    try {
+        const response = await fetch('userData.json'); // Fetch JSON file
+        if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+        }
+        const userData = await response.json(); // Parse JSON response
+        // Now you can use the 'userData' variable containing the JSON data
+        document.getElementById("coordinate").innerHTML = userData;
+        // Call any function or perform any operation with the userData
+    } catch (error) {
+        console.error('Error:', error.message);
+        document.getElementById("coordinate").innerHTML = error;
+    }
+}
 
 // setting the position of the pieces on start
 function start(){
+    getusernames()
     validmoves()
     // rows
     for(r = 0; r<8; r++){
