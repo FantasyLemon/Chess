@@ -218,7 +218,7 @@ async function getusernames() {
         // Call any function or perform any operation with the userData
     } catch (error) {
         console.error('Error:', error.message);
-        document.getElementById("coordinate").innerHTML = error;
+        document.getElementById("test").innerHTML = error;
     }
 }
 
@@ -264,8 +264,15 @@ function validmoves(){
         lookingforcheck(moves[x], moves[x+1], moves[x+2], moves[x+3])
     }
     if(moves.length == 0){
-        document.getElementById("coordinate").innerHTML = "Checkmate"
+        if(WhiteMove == true){
+            document.getElementById("coordinate").innerHTML = "Black wins by checkmate"
+        }
+        else{
+            document.getElementById("coordinate").innerHTML = "White wins by checkmate"
+        }
+        
     }
+    document.getElementById("test2").innerHTML = "Running on http://127.0.0.1:5000/"
 }
 
 
