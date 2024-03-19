@@ -3,7 +3,7 @@ squaresize = 500 / 8;
 xstart = window.innerWidth * 0.16
 ystart = 10;
 let square = document.getElementById("square");
-
+getusernames()
 // starting values
 totalturns = 0
 WhiteMove = true
@@ -12,11 +12,17 @@ Movemade = false
 legalmove = false
 colour1 = "#B88B4A"
 colour2 = "#E3C16F"
-
+loggedin = false
 
 // test lists - remove
 testlist = []
 newlist = []
+
+
+// datalists
+names = []
+passwords = []
+score = []
 
 // king starting positions
 whitekinglocation = []
@@ -26,6 +32,131 @@ whitekinglocation.push(4)
 blackkinglocation.push(0)
 blackkinglocation.push(4)
 
+
+// loging in
+function login(){
+    
+    // retrieves account information
+    getusernames()
+    enterredname = document.getElementById("name")
+    enterredpass = document.getElementById("password")
+    namelable = document.getElementById("namelabel")
+    passlable = document.getElementById("passlabel")
+    // checks if name is in database
+    found = false
+    for(x=0; x<names.length; x=x+1){
+        if(names[x] == enterredname.value){
+            index = x
+            found = true
+        }
+    }
+    // name found
+    if(found == true){
+        if(passwords[index] == enterredpass.value){
+            document.getElementById("test2").innerHTML = "both correct"
+            loggedin = true
+            enterredname.remove();
+            enterredpass.remove();
+            namelable.remove();
+            passlable.remove();
+        }
+        else{
+            document.getElementById("test2").innerHTML = "username and password do not match"
+        }
+    }
+
+    // name not found
+    if(found == false){
+        document.getElementById("test2").innerHTML = "please enter valid username"
+    }
+    
+}
+
+
+// signing up
+function createaccount(){
+    
+    // retrieves current data
+    getusernames()
+    taken = false
+    tempusername = document.getElementById("name")
+    temppassword = document.getElementById("password")
+    
+    for(x=0; x<names.length; x=x+1){
+        if(names[x] == tempusername.value){
+            document.getElementById("test2").innerHTML = "username is already taken"
+            taken = true
+        }
+    }
+    if(taken == flase){
+        
+    }
+    
+
+}
+
+// retrieve usernames
+function getusernames(){
+    //fetches the data
+    fetch("./userData.json")
+        .then(res => res.json())
+        .then(data => {
+            for(x=0; x<data.length; x=x+1){
+                // adds data to list
+                tempuser = JSON.stringify(data[x].username)
+                temppass = JSON.stringify(data[x].password)
+                temprank = JSON.stringify(data[x].rank)
+
+                // names
+                user = JSON.parse(tempuser)
+                names.push(user)
+
+                // passwords
+                pass = JSON.parse(temppass)
+                passwords.push(pass)
+
+                // score
+                playerscore = JSON.parse(temprank)
+                score.push(playerscore)
+            }
+            
+            document.getElementById("test").innerHTML = names
+            
+        })
+    
+}
+
+// setting the position of the pieces on start
+function start(){
+    validmoves()
+    // rows
+    for(r = 0; r<8; r++){
+        // collums
+        for(c = 0; c<8; c++){
+            //specific square
+            piece = String(board[r][c]);
+            // checks if the square is blank
+            if(piece == "---"){
+                continue;
+            }
+            // if the square contains a piece
+            else{
+                // the coordinates of the piece
+                y = (r* squaresize);
+                x = (c* squaresize);
+                var PieceY = document.getElementById(piece).offsetTop;
+                var PieceX = document.getElementById(piece).offsetLeft;
+                PieceY = PieceY + y;
+                document.getElementById(piece).style.top = PieceY + "px";
+                PieceX = PieceX + x;
+                document.getElementById(piece).style.left = PieceX + "px";
+            }
+            
+        }
+    }
+    
+
+}
 
 // initial board
 board = [
@@ -150,109 +281,62 @@ function movePiece(event) {
     if(y >= 0){
         y = Math.floor(y / squaresize);
     }
+    if(loggedin == true){
+        // first click
+        if(clicks == 1){
+            let firstclick = board[y][x];
+            // check if white clicked and whites move
+            if(firstclick[0] == "W" && WhiteMove == true){
+                if(firstclick != "---"){
+                    firsty = y
+                    firstx = x
+                    clicks = 2
+                    WhiteMove = false
+                }
+            }
+            // check if black clicked and black move
+            else if(firstclick[0] == "B" && WhiteMove != true){
+                if(firstclick != "---"){
+                    firsty = y
+                    firstx = x
+                    clicks = 2
+                    WhiteMove = true
+                }
+            } 
+            // reset click
+            else{
+                clicks = 1;
+            }     
 
-    // first click
-    if(clicks == 1){
-        let firstclick = board[y][x];
-        // check if white clicked and whites move
-        if(firstclick[0] == "W" && WhiteMove == true){
-            if(firstclick != "---"){
-                firsty = y
-                firstx = x
-                clicks = 2
-                WhiteMove = false
-            }
-        }
-        // check if black clicked and black move
-        else if(firstclick[0] == "B" && WhiteMove != true){
-            if(firstclick != "---"){
-                firsty = y
-                firstx = x
-                clicks = 2
-                WhiteMove = true
-            }
         } 
-        // reset click
+        // second click
         else{
-            clicks = 1;
-        }     
-
-    } 
-    // second click
-    else{
-        checkmove(firsty, firstx, y, x, moves)
-        // checks that the same square is not clicked twice
-        if(board[y][x] != board[firsty][firstx] && legalmove == true){
-            updateposition(firsty, firstx, y, x)
-            clicks = 1;
-            totalturns = totalturns + 1
-            validmoves()
-        }
-        // reset click
-        else{
-            clicks = 1;
-
-            // reset players move
-            if(WhiteMove == true){
-                WhiteMove = false
+            checkmove(firsty, firstx, y, x, moves)
+            // checks that the same square is not clicked twice
+            if(board[y][x] != board[firsty][firstx] && legalmove == true){
+                updateposition(firsty, firstx, y, x)
+                clicks = 1;
+                totalturns = totalturns + 1
+                validmoves()
             }
+            // reset click
             else{
-                WhiteMove = true
-            }
-        }
-    
-    }  
+                clicks = 1;
 
-    
-}
-
-async function getusernames() {
-    try {
-        const response = await fetch('userData.json'); // Fetch JSON file
-        if (!response.ok) {
-            throw new Error('Failed to fetch user data');
-        }
-        const userData = await response.json(); // Parse JSON response
-        // Now you can use the 'userData' variable containing the JSON data
-        document.getElementById("coordinate").innerHTML = userData;
-        // Call any function or perform any operation with the userData
-    } catch (error) {
-        console.error('Error:', error.message);
-        document.getElementById("test").innerHTML = error;
-    }
-}
-
-// setting the position of the pieces on start
-function start(){
-    getusernames()
-    validmoves()
-    // rows
-    for(r = 0; r<8; r++){
-        // collums
-        for(c = 0; c<8; c++){
-            //specific square
-            piece = String(board[r][c]);
-            // checks if the square is blank
-            if(piece == "---"){
-                continue;
+                // reset players move
+                if(WhiteMove == true){
+                    WhiteMove = false
+                }
+                else{
+                    WhiteMove = true
+                }
             }
-            // if the square contains a piece
-            else{
-                // the coordinates of the piece
-                y = (r* squaresize);
-                x = (c* squaresize);
-                var PieceY = document.getElementById(piece).offsetTop;
-                var PieceX = document.getElementById(piece).offsetLeft;
-                PieceY = PieceY + y;
-                document.getElementById(piece).style.top = PieceY + "px";
-                PieceX = PieceX + x;
-                document.getElementById(piece).style.left = PieceX + "px";
-            }
-            
-        }
+        
+        }      
     }
     
 
+    
 }
 
 // gets all moves including check
@@ -272,7 +356,6 @@ function validmoves(){
         }
         
     }
-    document.getElementById("test2").innerHTML = "Running on http://127.0.0.1:5000/"
 }
 
 

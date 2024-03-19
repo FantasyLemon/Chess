@@ -8,12 +8,27 @@
 <body onload="start()" onclick="movePiece(event)">
   <div id = "square">
   </div>
-  <p id="coordinate">checkbreak</p>
-  <p id="test">test:</p>
-  <p id="test2">test2:</p>
+  
   <script src="userData.json"></script>
   <script src = "script.js"></script>
-  
+  <p id="blank"> </p>
+  <button onclick="login()">Click to log in</button>
+  <button onclick="createaccount()">Click to sign up</button>
+	<p id="msg"></p>
+  <div class="container">
+
+    <label id="namelabel" for="name"><b>Name</b></label>
+    <input id="name" type = "text" placeholder="Enter Username" name="name" required>
+
+    <label id="passlabel" for="password"><b>Password</b></label>
+    <input id="password" type="password" placeholder="Enter Password" name="password" required>
+  </div>
+  </form>
+    
+
+  <p id="coordinate"> </p>
+  <p id="test">test:</p>
+  <p id="test2">test2:</p>
 
   <!-- white pawns -->
   <img id="WP1" src="Icons/WP.png" width= squaresize height= squaresize>
