@@ -4,20 +4,26 @@ xstart = window.innerWidth * 0.16
 ystart = 10;
 let square = document.getElementById("square");
 getusernames()
+
+
 // starting values
 totalturns = 0
 WhiteMove = true
 clicks = 1;
 Movemade = false
 legalmove = false
+loggedin = false
+loginturn = 0 
+Playeronename = "player1"
+Playertwoname = "player2"
+
+// colours
 colour1 = "#B88B4A"
 colour2 = "#E3C16F"
-loggedin = false
 
 // test lists - remove
 testlist = []
 newlist = []
-
 
 // datalists
 names = []
@@ -35,7 +41,7 @@ blackkinglocation.push(4)
 
 // loging in
 function login(){
-    
+
     // retrieves account information
     getusernames()
     enterredname = document.getElementById("name")
@@ -45,23 +51,43 @@ function login(){
     // checks if name is in database
     found = false
     for(x=0; x<names.length; x=x+1){
-        if(names[x] == enterredname.value){
+        if(names[x] == enterredname.value && enterredname.value != Playeronename){
+            // removing startingnames
             index = x
             found = true
+            
+            
         }
     }
     // name found
     if(found == true){
         if(passwords[index] == enterredpass.value){
-            document.getElementById("test2").innerHTML = "both correct"
-            loggedin = true
-            enterredname.remove();
-            enterredpass.remove();
-            namelable.remove();
-            passlable.remove();
+            // player 2 logged in 
+            if(loginturn == 1){
+                loggedin = true
+                Playertwoname = enterredname.value
+                document.getElementById("test2").innerHTML = "Welcome " + Playertwoname
+            }
+            // playerone has logged in
+            if(loginturn == 0){
+                loginturn = 1
+                Playeronename = enterredname.value
+                document.getElementById("test2").innerHTML = "Welcome " + Playeronename
+            }
+            
+            
+         
         }
         else{
-            document.getElementById("test2").innerHTML = "username and password do not match"
+            // player one signed in
+            if(enterredname.value == Playeronename){
+                document.getElementById("test2").innerHTML = "Player is already logged in"
+            }
+            // username not valid
+            else{
+                document.getElementById("test2").innerHTML = "Please enter a valid username"
+            }
+            
         }
     }
 
@@ -120,7 +146,6 @@ function getusernames(){
                 score.push(playerscore)
             }
             
-            document.getElementById("test").innerHTML = names
             
         })
     
