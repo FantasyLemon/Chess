@@ -1,11 +1,8 @@
-# Chess
-# HOW TO RUN PROGRAM
-# 1) Install Visual Studio Code and open the javascript code
-# 2) press CTRL + Shift + X (or navigate to extentions theme) and search "Live server"
-# 3) Once live server is installed, press the go live button (bottom right)
-# 4) in the tab that has oppened navigate to the page.html file, click to open (this file may be in a folder called code)
-
+# chess
 # HOW TO PLAY
-# 1) Each player must type in a username and password before selecting either to sign up or log in
-# 2) once both players have logged in or signed up, begin playing the game of chess by clicking on the pieces.
-# 3) once the game has finished, the winning player will recieve points whilst the loosing player will loose points. 
+# To begin the game, create an account or log into an account by typing your information and then clicking the corresponding button.
+# The first player to log in will be player 1 and play as white. 
+# Repeat the process for the second player who will play as black. 
+# The following game follows the same rules as chess, with minor changes: enpassent cannot be performed and pawns can only promote to queens.
+# The rules for the game can be found here: https://www.chess.com/learn-how-to-play-chess
+# Once the game is finished, reload the page to play again. You will require to log in again. 

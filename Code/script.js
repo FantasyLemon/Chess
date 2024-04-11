@@ -3,8 +3,6 @@ squaresize = 500 / 8;
 xstart = window.innerWidth * 0.16
 ystart = 10;
 let square = document.getElementById("square");
-getusernames()
-
 
 // starting values
 totalturns = 0
@@ -24,12 +22,6 @@ colour2 = "#E3C16F"
 // test lists - remove
 testlist = []
 newlist = []
-
-// datalists
-names = []
-passwords = []
-score = []
-
 // king starting positions
 whitekinglocation = []
 blackkinglocation = []
@@ -66,13 +58,13 @@ function login(){
             if(loginturn == 1){
                 loggedin = true
                 Playertwoname = enterredname.value
-                document.getElementById("test2").innerHTML = "Welcome " + Playertwoname
+                document.getElementById("test2").innerHTML = "Welcome " + Playertwoname + ". You may now begin"
             }
             // playerone has logged in
             if(loginturn == 0){
                 loginturn = 1
                 Playeronename = enterredname.value
-                document.getElementById("test2").innerHTML = "Welcome " + Playeronename
+                document.getElementById("test2").innerHTML = "Welcome " + Playeronename + ". Player 2 please log in"
             }
             
             
@@ -83,9 +75,9 @@ function login(){
             if(enterredname.value == Playeronename){
                 document.getElementById("test2").innerHTML = "Player is already logged in"
             }
-            // username not valid
+            // password not valid
             else{
-                document.getElementById("test2").innerHTML = "Please enter a valid username"
+                document.getElementById("test2").innerHTML = "Password is not correct"
             }
             
         }
@@ -93,7 +85,7 @@ function login(){
 
     // name not found
     if(found == false){
-        document.getElementById("test2").innerHTML = "please enter valid username"
+        document.getElementById("test2").innerHTML = "please enter valid usernamae"
     }
     
 }
@@ -114,8 +106,24 @@ function createaccount(){
             taken = true
         }
     }
-    if(taken == flase){
-        
+    if(taken == false){
+        data.push({
+            username: tempusername.value,
+            password: temppassword.value,
+            rank: 100
+        })
+        // player 2 logged in 
+        if(loginturn == 1){
+            loggedin = true
+            Playertwoname = tempusername.value
+            document.getElementById("test2").innerHTML = "Welcome " + Playertwoname + ". You may now begin"
+        }
+        // playerone has logged in
+        if(loginturn == 0){
+            loginturn = 1
+            Playeronename = tempusername.value
+            document.getElementById("test2").innerHTML = "Welcome " + Playeronename + ". Player 2 please log in"
+        }
     }
     
 
@@ -123,31 +131,9 @@ function createaccount(){
 
 // retrieve usernames
 function getusernames(){
-    //fetches the data
-    fetch("./userData.json")
-        .then(res => res.json())
-        .then(data => {
-            for(x=0; x<data.length; x=x+1){
-                // adds data to list
-                tempuser = JSON.stringify(data[x].username)
-                temppass = JSON.stringify(data[x].password)
-                temprank = JSON.stringify(data[x].rank)
-
-                // names
-                user = JSON.parse(tempuser)
-                names.push(user)
-
-                // passwords
-                pass = JSON.parse(temppass)
-                passwords.push(pass)
-
-                // score
-                playerscore = JSON.parse(temprank)
-                score.push(playerscore)
-            }
-            
-            
-        })
+    names = data.map(user => user.username);
+    passwords = data.map(user => user.password);
+    score = data.map(user => user.rank);
     
 }
 
@@ -366,6 +352,7 @@ function movePiece(event) {
 
 // gets all moves including check
 function validmoves(){
+    document.getElementById("test2").innerHTML = " "
     getAllMoves(board, true, WhiteMove)
     tempboardstate = board
     // checking if in check
@@ -374,10 +361,10 @@ function validmoves(){
     }
     if(moves.length == 0){
         if(WhiteMove == true){
-            document.getElementById("coordinate").innerHTML = "Black wins by checkmate"
+            document.getElementById("coordinate").innerHTML = playertwoname + " (Black) wins by checkmate"
         }
         else{
-            document.getElementById("coordinate").innerHTML = "White wins by checkmate"
+            document.getElementById("coordinate").innerHTML = Playeronename + " (White) wins by checkmate"
         }
         
     }
@@ -811,3 +798,22 @@ function checkmove(firstY, firstX, y, x, moves){
     i = 0
     loop(firstY, firstX, y, x, moves, i)
 }
+
+
+const data = [
+    {
+        "username": "Jimbo",
+        "password": "12345",
+        "rank": 124
+    },
+    {
+        "username": "Joe",
+        "password": "Joe123",
+        "rank": 110
+    },
+    {
+        "username": "David",
+        "password": "6Bananas",
+        "rank": 92
+    }
+]
