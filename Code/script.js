@@ -1,3 +1,4 @@
+userData = []
 // size of the squares
 squaresize = 500 / 8;
 xstart = window.innerWidth * 0.16
@@ -19,17 +20,32 @@ Playertwoname = "player2"
 colour1 = "#B88B4A"
 colour2 = "#E3C16F"
 
-// test lists - remove
-testlist = []
-newlist = []
 // king starting positions
 whitekinglocation = []
 blackkinglocation = []
+
 whitekinglocation.push(7)
 whitekinglocation.push(4)
+
+
 blackkinglocation.push(0)
 blackkinglocation.push(4)
 
+
+
+function saveData() {
+    localStorage.setItem("userData", JSON.stringify(userData))
+}
+
+function loadData(){
+    const data = localStorage.getItem("userData")
+    if (data) {
+        return JSON.parse(data)
+    }
+    else{
+        return []
+    }
+}
 
 // loging in
 function login(){
@@ -48,7 +64,6 @@ function login(){
             index = x
             found = true
             
-            
         }
     }
     // name found
@@ -56,15 +71,30 @@ function login(){
         if(passwords[index] == enterredpass.value){
             // player 2 logged in 
             if(loginturn == 1){
+
                 loggedin = true
                 Playertwoname = enterredname.value
-                document.getElementById("test2").innerHTML = "Welcome " + Playertwoname + ". You may now begin"
+                Playertwowins = totalwins[index]
+                Playertwolosses = totallosses[index]
+
+                // updating screen
+                document.getElementById("console").innerHTML = "Welcome " + Playertwoname + ". You may now begin"
+                document.getElementById("whiterating").innerHTML = "White: " + Playeronename + ". Wins: " + Playeronewins + " Losses: " + Playeronelosses
+                document.getElementById("blackrating").innerHTML = "Black: " + Playertwoname + ". Wins: " + Playertwowins + " Losses: " + Playertwolosses
             }
             // playerone has logged in
             if(loginturn == 0){
                 loginturn = 1
+
+
+                // player information
                 Playeronename = enterredname.value
-                document.getElementById("test2").innerHTML = "Welcome " + Playeronename + ". Player 2 please log in"
+                Playeronewins = totalwins[index]
+                Playeronelosses = totallosses[index]
+
+                // updating the screen
+                document.getElementById("console").innerHTML = "Welcome " + Playeronename + ". Player 2 please log in"
+                document.getElementById("whiterating").innerHTML = "White: " + Playeronename + ". Wins: " + Playeronewins + " Losses: " + Playeronelosses
             }
             
             
@@ -73,11 +103,11 @@ function login(){
         else{
             // player one signed in
             if(enterredname.value == Playeronename){
-                document.getElementById("test2").innerHTML = "Player is already logged in"
+                document.getElementById("console").innerHTML = "Player is already logged in"
             }
             // password not valid
             else{
-                document.getElementById("test2").innerHTML = "Password is not correct"
+                document.getElementById("console").innerHTML = "Password is not correct"
             }
             
         }
@@ -85,55 +115,69 @@ function login(){
 
     // name not found
     if(found == false){
-        document.getElementById("test2").innerHTML = "please enter valid usernamae"
+        document.getElementById("console").innerHTML = "please enter valid usernamae"
     }
     
 }
 
 
-// signing up
-function createaccount(){
-    
+function createaccount() {
     // retrieves current data
-    getusernames()
-    taken = false
-    tempusername = document.getElementById("name")
-    temppassword = document.getElementById("password")
-    
-    for(x=0; x<names.length; x=x+1){
-        if(names[x] == tempusername.value){
-            document.getElementById("test2").innerHTML = "username is already taken"
-            taken = true
+    getusernames();
+    let taken = false;
+    let tempusername = document.getElementById("name");
+    let temppassword = document.getElementById("password");
+
+    for (let x = 0; x < names.length; x++) {
+        if (names[x] == tempusername.value) {
+            document.getElementById("console").innerHTML = "username is already taken";
+            taken = true;
         }
     }
-    if(taken == false){
-        data.push({
+    if (!taken) {
+        userData.push({
             username: tempusername.value,
             password: temppassword.value,
-            rank: 100
-        })
+            wins:  0,
+            losses: 0
+        });
+        saveData(); // Save data here
         // player 2 logged in 
-        if(loginturn == 1){
-            loggedin = true
-            Playertwoname = tempusername.value
-            document.getElementById("test2").innerHTML = "Welcome " + Playertwoname + ". You may now begin"
-        }
-        // playerone has logged in
-        if(loginturn == 0){
-            loginturn = 1
-            Playeronename = tempusername.value
-            document.getElementById("test2").innerHTML = "Welcome " + Playeronename + ". Player 2 please log in"
-        }
-    }
-    
 
+        if (loginturn == 1) {
+            loggedin = true;
+            Playertwoname = tempusername.value;
+            Playertwowins = 0
+            Playertwolosses = 0
+
+            // updating screen
+            document.getElementById("console").innerHTML = "Welcome " + Playertwoname + ". You may now begin";
+            document.getElementById("whiterating").innerHTML = "White: " + Playeronename + ". Wins: " + Playeronewins + " Losses: " + Playeronelosses
+            document.getElementById("blackrating").innerHTML = "Black: " + Playertwoname + ". Wins: " + Playertwowins + " Losses: " + Playertwolosses
+        }
+
+        // playerone has logged in
+        if (loginturn == 0) {
+            loginturn = 1;
+            Playeronename = tempusername.value;
+            Playeronewins = 0
+            Playeronelosses = 0
+
+            document.getElementById("console").innerHTML = "Welcome " + Playeronename + ". Player 2 please log in";
+            document.getElementById("whiterating").innerHTML = "White: " + Playeronename + ". Wins: " + Playeronewins + " Losses: " + Playeronelosses
+        }
+
+    }
 }
+
 
 // retrieve usernames
 function getusernames(){
+    userData = loadData()
     names = data.map(user => user.username);
     passwords = data.map(user => user.password);
-    score = data.map(user => user.rank);
+    totalwins = data.map(user => user.wins);
+    totallosses = data.map(user => user.losses);
     
 }
 
@@ -352,7 +396,7 @@ function movePiece(event) {
 
 // gets all moves including check
 function validmoves(){
-    document.getElementById("test2").innerHTML = " "
+    document.getElementById("console").innerHTML = " "
     getAllMoves(board, true, WhiteMove)
     tempboardstate = board
     // checking if in check
@@ -361,10 +405,13 @@ function validmoves(){
     }
     if(moves.length == 0){
         if(WhiteMove == true){
-            document.getElementById("coordinate").innerHTML = playertwoname + " (Black) wins by checkmate"
+            document.getElementById("coordinate").innerHTML = Playertwoname + " (Black) wins by checkmate"
+            updateScores(Playertwoname, Playeronename)
+
         }
         else{
             document.getElementById("coordinate").innerHTML = Playeronename + " (White) wins by checkmate"
+            updateScores(Playeronename, Playertwoname)
         }
         
     }
@@ -799,21 +846,27 @@ function checkmove(firstY, firstX, y, x, moves){
     loop(firstY, firstX, y, x, moves, i)
 }
 
+function updateScores(winner, loser) {
+    // Find the winner and loser in userData
+    winnerIndex = userData.findIndex(user => user.username === winner);
+    loserIndex = userData.findIndex(user => user.username === loser);
 
-const data = [
-    {
-        "username": "Jimbo",
-        "password": "12345",
-        "rank": 124
-    },
-    {
-        "username": "Joe",
-        "password": "Joe123",
-        "rank": 110
-    },
-    {
-        "username": "David",
-        "password": "6Bananas",
-        "rank": 92
+    // Update scores
+    if (winnerIndex !== -1 && loserIndex !== -1) {
+        // Increase winner's wins by 1
+        userData[winnerIndex].wins += 1;
+        // Increase loser's losses by 1
+        userData[loserIndex].losses += 1;
+        // Save updated userData to localStorage
+        saveData();
+
+        document.getElementById("whiterating").innerHTML = "White: " + Playeronename + ". Wins: " + Playeronewins + " Losses: " + Playeronelosses
+        document.getElementById("blackrating").innerHTML = "Black: " + Playertwoname + ". Wins: " + Playertwowins + " Losses: " + Playertwolosses
     }
-]
+}
+
+
+
+
+data = loadData()
+console.log(data)
