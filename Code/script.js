@@ -1,9 +1,11 @@
-userData = []
+
 // size of the squares
 squaresize = 500 / 8;
 xstart = window.innerWidth * 0.16
 ystart = 10;
 let square = document.getElementById("square");
+userData = []
+
 
 // starting values
 totalturns = 0
@@ -27,16 +29,15 @@ blackkinglocation = []
 whitekinglocation.push(7)
 whitekinglocation.push(4)
 
-
 blackkinglocation.push(0)
 blackkinglocation.push(4)
 
-
-
+// save the JSON data
 function saveData() {
     localStorage.setItem("userData", JSON.stringify(userData))
 }
 
+// load the JSON data
 function loadData(){
     const data = localStorage.getItem("userData")
     if (data) {
@@ -52,10 +53,13 @@ function login(){
 
     // retrieves account information
     getusernames()
+
+    // entered data
     enterredname = document.getElementById("name")
     enterredpass = document.getElementById("password")
     namelable = document.getElementById("namelabel")
     passlable = document.getElementById("passlabel")
+
     // checks if name is in database
     found = false
     for(x=0; x<names.length; x=x+1){
@@ -72,6 +76,7 @@ function login(){
             // player 2 logged in 
             if(loginturn == 1){
 
+                // player two informaiton
                 loggedin = true
                 Playertwoname = enterredname.value
                 Playertwowins = totalwins[index]
@@ -120,7 +125,7 @@ function login(){
     
 }
 
-
+// function for creating account
 function createaccount() {
     // retrieves current data
     getusernames();
@@ -134,6 +139,8 @@ function createaccount() {
             taken = true;
         }
     }
+
+    // data to add
     if (!taken) {
         userData.push({
             username: tempusername.value,
@@ -141,10 +148,13 @@ function createaccount() {
             wins:  0,
             losses: 0
         });
+
+
         saveData(); // Save data here
         // player 2 logged in 
 
         if (loginturn == 1) {
+            // playertwo informaiton
             loggedin = true;
             Playertwoname = tempusername.value;
             Playertwowins = 0
@@ -158,11 +168,14 @@ function createaccount() {
 
         // playerone has logged in
         if (loginturn == 0) {
+
+            // playerone information
             loginturn = 1;
             Playeronename = tempusername.value;
             Playeronewins = 0
             Playeronelosses = 0
 
+            // updating the screen
             document.getElementById("console").innerHTML = "Welcome " + Playeronename + ". Player 2 please log in";
             document.getElementById("whiterating").innerHTML = "White: " + Playeronename + ". Wins: " + Playeronewins + " Losses: " + Playeronelosses
         }
@@ -209,7 +222,6 @@ function start(){
             
         }
     }
-    
 
 }
 
@@ -322,8 +334,8 @@ for(i=1; i< 9; i++){
 
 
 function movePiece(event) {
-    let x = event.clientX;
-    let y = event.clientY;
+    x = event.clientX;
+    y = event.clientY;
 
     //calculating x coordinate
     x = x - xstart;
@@ -501,81 +513,101 @@ function getAllMoves(board, movetype, Movecolour){
     }
 
     // pawn movement
-    function PawnMovement(r, c, turn, moves){
-        // whites pawn movement
+    function PawnMovement(r, c, turn, moves, lastMove){
         if(turn == "W" && Movecolour == true){
             if(r-1 >= 0){
-                // checks square above
+                // Check one square ahead
                 if(board[r-1][c] == "---"){
-                    pushvalues(r, c, r-1, c, moves, movetype)
+                    pushvalues(r, c, r-1, c, moves, movetype);
                     
-                    // two square move
+                    // Check two squares ahead 
                     if(r == 6 && board[r - 2][c] == "---"){
-                        pushvalues(r, c, r-2, c, moves, movetype)
+                        pushvalues(r, c, r-2, c, moves, movetype);
                     }
                 }
-                // captures to the left
+                // Capture to the left
                 if(c - 1 >= 0){
                     if(board[r-1][c-1][0] == "B"){
-                        pushvalues(r, c, r-1, c-1, moves, movetype)
+                        pushvalues(r, c, r-1, c-1, moves, movetype);
                     }
                 }
-                // captures to the right
+                // Capture to the right
                 if(c + 1 <= 7){
                     if(board[r-1][c+1][0] == "B"){
-                        pushvalues(r, c, r-1, c+1, moves, movetype)
+                        pushvalues(r, c, r-1, c+1, moves, movetype);
                     }
                 }
             }
-           
         } 
-
-        // blacks pawn movement
+    
         if(turn == "B" && Movecolour != true){
             if(r+1 <= 7){
-                // checks 1 square above
+                // Check one square ahead
                 if(board[r+1][c] == "---"){
-                    pushvalues(r, c, r+1, c, moves, movetype)
+                    pushvalues(r, c, r+1, c, moves, movetype);
                     
-                    // checks 2 squares above
+                    // Check two squares ahead 
                     if(r == 1 && board[r + 2][c] == "---"){
-                        pushvalues(r, c, r+2, c, moves, movetype)
+                        pushvalues(r, c, r+2, c, moves, movetype);
                     }
                 }
-
+    
             }
-            // captures to the left
+            // Capture to the left
             if(c - 1 >= 0){
                 if(board[r+1][c-1][0] == "W"){
-                    pushvalues(r, c, r+1, c-1, moves, movetype)
+                    pushvalues(r, c, r+1, c-1, moves, movetype);
                 }
             }
-            // captures to the right
+            // Capture to the right
             if(c + 1 <= 7){
                 if(board[r+1][c+1][0] == "W"){
-                    pushvalues(r, c, r+1, c+1, moves, movetype)
+                    pushvalues(r, c, r+1, c+1, moves, movetype);
+                }
+            }
+        }
+    
+        // Check for en passant
+        if (lastMove && Math.abs(lastMove[0] - lastMove[2]) === 2) {
+            // Row where en passant capture can occur
+            if (turn === "W"){
+                enPassantRow = 3
+            }
+            else{
+                enPassantRow = 4
+            }
+            // enpassent moveset
+            if ((turn === "W" && r === 3) || (turn === "B" && r === 4)) {
+                if (Math.abs(c - lastMove[3]) === 1) {
+                    pushvalues(r, c, enPassantRow, lastMove[3], moves, movetype);
                 }
             }
         }
     }
-
+    
     // rook movement
     function RookMovement(r, c, turn, moves) {
-        const directions = [ [-1, 0], [0, -1], [1, 0], [0, 1] ];
+         directions = [ [-1, 0], [0, -1], [1, 0], [0, 1] ];
+        
+        // gpomg through all the moves
+        for ( d of directions) {
+            for (i = 1; i < 8; i++) {
+                // multiplying to go through the rows and collums
+                endRow = r + d[0] * i;
+                endCol = c + d[1] * i;
     
-        for (const d of directions) {
-            for (let i = 1; i < 8; i++) {
-                const endRow = r + d[0] * i;
-                const endCol = c + d[1] * i;
-    
+                // reaches the end of the board
                 if (!(0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8)) {
                     break;
                 }
     
-                const endPiece = board[endRow][endCol];
-    
+                endPiece = board[endRow][endCol];
+                
+                // valid empty squares
                 if (endPiece === "---") {
                     pushvalues(r, c, endRow, endCol, moves, movetype);
+
+                // valid square containing enemy pieces
                 } else if (endPiece[0] === enemymove) {
                     pushvalues(r, c, endRow, endCol, moves, movetype);
                     break;
@@ -589,7 +621,8 @@ function getAllMoves(board, movetype, Movecolour){
     // knight movement
     function KnightMovement(r, c, turn, moves){
         knightdirections = []
-
+        
+        // all 8 knight directions
         knightdirections.push(-2)
         knightdirections.push(-1)
 
@@ -637,23 +670,25 @@ function getAllMoves(board, movetype, Movecolour){
 
     // bishop movement
     function BishopMovement(r, c, turn, moves) {
-        const directions = [ [-1, -1], [-1, 1], [1, -1], [1, 1] ];
+        directions = [ [-1, -1], [-1, 1], [1, -1], [1, 1] ];
     
-        for (const d of directions) {
-            const [dr, dc] = d;
+        for ( d of directions) {
+            [dr, dc] = d;
     
             for (let i = 1; i < 8; i++) {
-                const endRow = r + dr * i;
-                const endCol = c + dc * i;
+                endRow = r + dr * i;
+                endCol = c + dc * i;
     
                 if (!(0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8)) {
                     break;
                 }
     
-                const endPiece = board[endRow][endCol];
-    
+                endPiece = board[endRow][endCol];
+                // ensquare empty and valid
                 if (endPiece === "---") {
                     pushvalues(r, c, endRow, endCol, moves, movetype);
+
+                // endsquare contains enemy piece and valid
                 } else if (endPiece[0] === enemymove) {
                     pushvalues(r, c, endRow, endCol, moves, movetype);
                     break;
@@ -665,49 +700,73 @@ function getAllMoves(board, movetype, Movecolour){
     }
     
 
-    // king movement
-    function KingMovement(r, c, turn, moves){
-        kingdirections = []
+   // king movement
+function KingMovement(r, c, turn, moves){
+    // all 8 king directions
+    kingdirections = []
 
-        kingdirections.push(-1)
-        kingdirections.push(-1)
+    kingdirections.push(-1)
+    kingdirections.push(-1)
 
-        kingdirections.push(-1)
-        kingdirections.push(0)
+    kingdirections.push(-1)
+    kingdirections.push(0)
 
-        kingdirections.push(-1)
-        kingdirections.push(1)
+    kingdirections.push(-1)
+    kingdirections.push(1)
 
-        kingdirections.push(0)
-        kingdirections.push(-1)
+    kingdirections.push(0)
+    kingdirections.push(-1)
 
-        kingdirections.push(0)
-        kingdirections.push(1)
+    kingdirections.push(0)
+    kingdirections.push(1)
 
-        kingdirections.push(1)
-        kingdirections.push(-1)
+    kingdirections.push(1)
+    kingdirections.push(-1)
 
-        kingdirections.push(1)
-        kingdirections.push(0)
+    kingdirections.push(1)
+    kingdirections.push(0)
 
-        kingdirections.push(1)
-        kingdirections.push(1)
+    kingdirections.push(1)
+    kingdirections.push(1)
 
-        for(d = 0; d < 16; d = d + 2){
-            value1 = kingdirections[d]
-            value2 = kingdirections[d+1] 
-            endRow = r + value1
-            endCol = c + value2
-            if(0 <= endRow && endRow < 8){
-                if(0 <= endCol && endCol < 8){
-                    endPiece = board[endRow][endCol]
-                    if(endPiece[0] != allypiece){
-                        pushvalues(r, c, endRow, endCol, moves, movetype)
-                    }
+    for(d = 0; d < 16; d = d + 2){
+        value1 = kingdirections[d]
+        value2 = kingdirections[d+1] 
+        endRow = r + value1
+        endCol = c + value2
+        if(0 <= endRow && endRow < 8){
+            if(0 <= endCol && endCol < 8){
+                endPiece = board[endRow][endCol]
+                if(endPiece[0] != allypiece){
+                    pushvalues(r, c, endRow, endCol, moves, movetype)
                 }
             }
         }
     }
+
+    // Check for castling
+    if (turn === "WK1" && r === 7 && c === 4 && !isChecked(turn)) {
+        // Check if squares between king and rook are empty
+        if (board[7][5] === "---" && board[7][6] === "---") {
+            // Check if rook is in its initial position
+            if (board[7][7] === "WR2") {
+                // Check if squares are not under attack
+                if (!isUnderAttack(7, 4) && !isUnderAttack(7, 5) && !isUnderAttack(7, 6)) {
+                    // Add castling move to legal moves
+                    pushvalues(r, c, 7, 6, moves, movetype);
+                }
+            }
+        }
+        if (board[7][3] === "---" && board[7][2] === "---" && board[7][1] === "---") {
+            if (board[7][0] === "WR1") {
+                if (!isUnderAttack(7, 4) && !isUnderAttack(7, 3) && !isUnderAttack(7, 2)) {
+                    pushvalues(r, c, 7, 2, moves, movetype);
+                }
+            }
+        }
+    }
+}
+
 }
 function pushvalues(startY, startX, newY, newX, moves, movetype) {
     // updating the regular move set
@@ -740,20 +799,22 @@ function pushvalues(startY, startX, newY, newX, moves, movetype) {
 }
 
 // updating the position of the piece
-function updateposition(startY, startX, EndY, EndX){
+function updateposition(startY, startX, EndY, EndX){  
+    
     // removing any pieces on square moved to
     if(board[EndY][EndX] != "---"){
-        var Removal = document.getElementById(board[EndY][EndX])
+        Removal = document.getElementById(board[EndY][EndX])
         Removal.remove();     
     }
     currentpieces = []
+
     // updating the piece position
     board[EndY][EndX] = board[startY][startX];
     piece = String(board[EndY][EndX]);
-  
+   
     // getting the current piece location
-    var pieceX = document.getElementById(piece).offsetLeft;
-    var pieceY = document.getElementById(piece).offsetTop;
+    pieceX = document.getElementById(piece).offsetLeft;
+    pieceY = document.getElementById(piece).offsetTop;
 
     // calculating the Y change
     differenceY = EndY - startY
@@ -764,7 +825,9 @@ function updateposition(startY, startX, EndY, EndX){
     differenceX = EndX - startX
     x = (differenceX * squaresize)
     pieceX = pieceX + x;
-    
+
+
+
     // updating the position
     document.getElementById(piece).style.top = pieceY + "px";
     document.getElementById(piece).style.left = pieceX + "px";
@@ -773,6 +836,7 @@ function updateposition(startY, startX, EndY, EndX){
     // clearing the current square
     board[startY][startX] = "---"
     moves = []
+
 
     // checking for incufficent material
     for(x=0; x<8; x=x+1){
@@ -846,6 +910,7 @@ function checkmove(firstY, firstX, y, x, moves){
     loop(firstY, firstX, y, x, moves, i)
 }
 
+
 function updateScores(winner, loser) {
     // Find the winner and loser in userData
     winnerIndex = userData.findIndex(user => user.username === winner);
@@ -853,20 +918,31 @@ function updateScores(winner, loser) {
 
     // Update scores
     if (winnerIndex !== -1 && loserIndex !== -1) {
+
         // Increase winner's wins by 1
-        userData[winnerIndex].wins += 1;
+        userData[winnerIndex].wins = userData[winnerIndex].wins + 1;
+
         // Increase loser's losses by 1
-        userData[loserIndex].losses += 1;
+        userData[loserIndex].losses = userData[loserIndex].losses + 1;
+
         // Save updated userData to localStorage
         saveData();
 
+        // updating the data on screen 
+        if (winner == Playeronename){
+            Playeronewins = Playeronewins + 1
+            Playertwolosses = Playertwolosses + 1
+        }
+        else{
+            Playeronelosses = Playeronelosses + 1
+            Playertwowins = Playertwowins + 1
+        }
+
+        // printing to screen
         document.getElementById("whiterating").innerHTML = "White: " + Playeronename + ". Wins: " + Playeronewins + " Losses: " + Playeronelosses
         document.getElementById("blackrating").innerHTML = "Black: " + Playertwoname + ". Wins: " + Playertwowins + " Losses: " + Playertwolosses
     }
 }
-
-
-
 
 data = loadData()
 console.log(data)
